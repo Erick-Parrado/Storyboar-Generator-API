@@ -1,51 +1,34 @@
 <?php
 
 require_once 'model/userModel.php';
+require_once 'controller/EndpointController.php';
 
-class UserController{
-    private $_method;
-    private $_complement;
-    private $_data;
-    private $_add;
-
-    const FIELDS = array('user_id','user_name','user_lastName','user_email','user_pass','user_phone','user_age','us_identifier','us_key');
-
+class UserController extends EndpointController{
     function __construct($method, $complement=null, $data=null,$add=null){
-        $this->_method = $method;
-        $this->_complement = $complement == null ? 0: $complement;
-        $this->_data = $data;
-        $this->_add = $add;
+        $fields = array('user_id','user_name','user_lastName','user_email','user_pass','user_phone','user_age','us_identifier','us_key');
+        parent::__construct(200,$method,$complement,$data,$add,$fields);
     }
 
     public function index(){
+        $response = null;
         try{
             switch ($this->_method){
                 case 'GET':
                     echo 'Getting';
                     break;
                 case 'POST':
-                    $this->validateData();
+                    $this->existData();
+                    $this->validateFields();
+                    $this->validateValues();
                     $this->generateSalting();
-                    echo UserModel::createUser($this->_data);
-                    //ResponseController::response(UserModel::createUser($this->_data));
+                    ResponseController::response(UserModel::createUser($this->_data));
                     break;
                 default:
                     ResponseController::response(104);
             }
         }
         catch(Exception $e){
-            echo $e->getMessage();
             ResponseController::response((int)$e->getMessage());
-        }
-    }
-
-    private function validateFields(){$dataAO = new ArrayObject($this->_data);
-        $iter = $dataAO -> getIterator();
-        while($iter->valid()){
-            if(!in_array($iter->key(),self::FIELDS)){
-                throw new Exception(220);
-            }
-            $iter->next();
         }
     }
 
@@ -72,22 +55,6 @@ class UserController{
             }
         }
     }
-
-    private function existData(){
-        if($this->_data == null) throw new Exception(299);
-    }
-
-    private function validateData(){
-        try{
-            $this->existData();
-            $this->validateFields();
-            $this->validateValues();
-        }
-        catch(Exception $e){
-            throw new Exception($e->getMessage());
-        }
-    }
-
 
     private function generateSalting(){
         $trimmed_data="";

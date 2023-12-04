@@ -11,17 +11,26 @@
 class ResponseController{   
 
     static private $_response=null;
-    static private $_cod=null;
+    static private $_cod = null;
+    static private $_extra = null;
 
     static public function response($cod,$extra=null){
-        self::$_cod = $cod;
+        if(is_array($cod)){
+            self::$_cod = $cod[0];
+            self::$_extra = $cod[1];
+        }
+        else{
+            self::$_cod = $cod;
+            self::$_extra = $extra;
+        }
+        
         switch(self::$_cod){
             case 104:
                 self::setError('Ruta no encontrada');
                 break;
             case 110:
                 self::setInfo('OK');
-                self::$_response['credentials'] = $extra;
+                self::$_response['credentials'] = self::$_extra;
                 break;
             case 114:
                 self::setError('NO TIENE CREDENCIALES');
@@ -36,10 +45,12 @@ class ResponseController{
                 break;
             case 200:
                 self::setInfo('Usuario creado');
+                break;
             case 209:
                 self::setInfo('Usuario ya existe');
+                break;
             case 220:
-                self::setError('Campos no reconocidos en la data');
+                self::setError('Campos no reconocidos en la data de users');
                 break;
             case 221:
                 self::setError('user_email no cumple con las condiciones mínimas',
@@ -75,13 +86,14 @@ class ResponseController{
                 self::setInfo('Servicio desconocido');
                 break;
             case 910:
-                self::setInfo('Error en sentencia SQL');
+                self::setInfo('Error en sentencia SQL',self::$_extra);
                 break;
             case 909:
-                self::setInfo($extra);
+                self::setInfo('Error de conexion');
+                self::$_response['info'] = self::$_extra;
                 break;
             default:
-                self::setError('Mensaje no identificado');
+                self::setError('Mensaje no identificado',self::$_extra);
             /*case 101://Validacion de correo
                 self::setError('El campo '.$statement.' no cumple con condiciones mínimas');
                 break;
@@ -122,9 +134,10 @@ class ResponseController{
         echo json_encode(self::$_response,JSON_UNESCAPED_UNICODE);
     }
 
-    static private function setInfo($message){
+    static private function setInfo($message,$details = null){
         self::$_response['info']['status']=self::$_cod;
         self::$_response['info']['message']=$message;
+        if($details!=null)self::$_response['info']['details']=$details;
     }
 
     static private function setError($message,$info=null){

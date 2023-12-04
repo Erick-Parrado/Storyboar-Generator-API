@@ -1,5 +1,6 @@
 <?php
 require_once 'controller/userController.php';
+require_once 'controller/userController2.php';
 
 $routesArray = array_filter(explode("/",$_SERVER['REQUEST_URI']));
 
@@ -27,6 +28,9 @@ if ($routesArray[3] == ''){
     switch($endPoint){
         case 'users':
             $petition = new UserController($method,null,$_POST);
+            break;
+        case 'users2':
+            $petition = new UserController2($method,null,$_POST);
             break;
         case 'projects':
             echo 'Projects';

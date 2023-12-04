@@ -3,10 +3,11 @@ class UserModel{
     static public function createUser($data){
             if(!(self::emailExist($data))){
                 $query = "INSERT INTO `users`(`user_name`, `user_lastName`, `user_email`, `user_pass`, `user_phone`, `user_age`, `us_identifier`, `us_key`) VALUES (:user_name,:user_lastName,:user_email,:user_pass,:user_phone,:user_age,:us_identifier,:us_key)";
-                if(self::executeQuery($query,$data)) return 910;
-                return 200;
+                $response = self::executeQuery($query,$data);
+                if($response == true) return 200;
+                return $response;
             }
-            return 203;
+            return 209;
     }
 
     static private function emailExist($data){
@@ -64,7 +65,7 @@ class UserModel{
             $error = $statement->execute() ? false : Connection::doConnection()->errorInfo();
             $statement-> closeCursor();
             $statement = null;
-            if($error != false) return false;
+            if($error != false) return array(910,$error->getMessage());
             else return true;
         }
     }
