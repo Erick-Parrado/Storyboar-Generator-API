@@ -9,6 +9,7 @@ class EndpointController{
 
     function __construct($codBase,$method, $complement=null, $data=null,$add=null,$fields){
         $this->_method = $method;
+        
         $this->_complement = $complement == null ? 0: $complement;
         $this->_data = $data;
         $this->_add = $add;

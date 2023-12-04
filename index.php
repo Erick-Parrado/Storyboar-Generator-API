@@ -12,10 +12,6 @@ header('Access-Control-Allow-Headers: Authorization');
 $routesArray = array_filter(explode('/',$_SERVER['REQUEST_URI']));
 $count = count($routesArray);
 
-/*$api = (array_filter($routesArray)[2]);
-*/
-
-
 switch ($count){
     case 2:
         if($routesArray[2]=='API'){
@@ -26,8 +22,13 @@ switch ($count){
             ResponseController::response(904);
         break;
     case 3:
+    case 4:
+    case 5:
         $endPoint = ($routesArray[3]);
         enterRoutes($endPoint);
+        break;
+    default:
+        ResponseController::response(109);
 }
 
 function enterRoutes($endPoint){

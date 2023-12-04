@@ -1,22 +1,28 @@
 <?php
 class UserModel{
+    static public function readUser($id=null){
+        $query = 'SELECT user_id,user_name,user_lastName,user_email,user_pass,user_phone,user_age FROM users';
+        $query .= ($id > 0 && $id != null)?' WHERE user_id ='.$id:'';
+        return self::executeQuery($query,201);
+    }
+    //POST
     static public function createUser($data){
-            if(!(self::emailExist($data))){
-                $query = "INSERT INTO `users`(`user_name`, `user_lastName`, `user_email`, `user_pass`, `user_phone`, `user_age`, `us_identifier`, `us_key`) VALUES (:user_name,:user_lastName,:user_email,:user_pass,:user_phone,:user_age,:us_identifier,:us_key)";
-                $response = self::executeQuery($query,$data);
-                if($response == true) return 200;
-                return $response;
-            }
-            return 209;
+        if(!(self::emailExist($data))){
+            $query = "INSERT INTO `users`(`user_name`, `user_lastName`, `user_email`, `user_pass`, `user_phone`, `user_age`, `us_identifier`, `us_key`) VALUES (:user_name,:user_lastName,:user_email,:user_pass,:user_phone,:user_age,:us_identifier,:us_key)";
+            return self::executeQuery($query,200,$data);
+        }
+        return 209;
     }
 
+    //Extras
     static private function emailExist($data){
         $query = "SELECT user_email FROM users WHERE user_email=:user_email";
         $count = self::executeQuery($query,$data)->rowCount();
         return ($count>0)?1:0;
     }
 
-    static public function  executeQuery($query,$data=null,$fetch=false){
+    //Ejecutor de queries
+    static public function  executeQuery($query,$confirmCod,$data=null,$fetch=false){
         $fields = array('user_id','user_name','user_lastName','user_email','user_pass','user_phone','user_age','us_identifier','us_key');
         $statement= Connection::doConnection()->prepare($query);
         if(isset($data)){
@@ -59,14 +65,14 @@ class UserModel{
         if(preg_match('/^SELECT.*$/',$query)){
             $statement -> execute();
             if($fetch) return $statement->fetchAll(PDO::FETCH_ASSOC);
-            return $statement;
+            return array($confirmCod,$statement);
         }
         else{
             $error = $statement->execute() ? false : Connection::doConnection()->errorInfo();
             $statement-> closeCursor();
             $statement = null;
             if($error != false) return array(910,$error->getMessage());
-            else return true;
+            else return $confirmCod;
         }
     }
 }

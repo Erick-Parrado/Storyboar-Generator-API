@@ -1,7 +1,7 @@
 <?php
 
 require_once 'model/userModel.php';
-require_once 'controller/EndpointController.php';
+require_once 'controller/endpointController.php';
 
 class UserController extends EndpointController{
     function __construct($method, $complement=null, $data=null,$add=null){
@@ -10,25 +10,26 @@ class UserController extends EndpointController{
     }
 
     public function index(){
-        $response = null;
         try{
+            $response = null;
             switch ($this->_method){
                 case 'GET':
-                    echo 'Getting';
+                    $response = UserModel::readUser($this->_complement);
                     break;
                 case 'POST':
                     $this->existData();
                     $this->validateFields();
                     $this->validateValues();
                     $this->generateSalting();
-                    ResponseController::response(UserModel::createUser($this->_data));
+                    $response = UserModel::createUser($this->_data);
                     break;
                 default:
-                    ResponseController::response(104);
+                    $response = 104;
             }
+            ResponseController::response($response);
         }
         catch(Exception $e){
-            ResponseController::response((int)$e->getMessage());
+            ResponseController::response((int)$e->getMessage(),$e->getMessage());
         }
     }
 

@@ -28,6 +28,9 @@ class ResponseController{
             case 104:
                 self::setError('Ruta no encontrada');
                 break;
+            case 109:
+                self::setError('Exceso de parametros');
+                break;
             case 110:
                 self::setInfo('OK');
                 self::$_response['credentials'] = self::$_extra;
@@ -43,8 +46,11 @@ class ResponseController{
                 self::$_response['credentials'] = null;
                 self::$_response['header'] = "HTTP/1.1 400 FAIL";
                 break;
-            case 200:
+            case 200://Post Users
                 self::setInfo('Usuario creado');
+                break;
+            case 201://Get Users
+                self::setResult(self::$_extra);
                 break;
             case 209:
                 self::setInfo('Usuario ya existe');
@@ -96,9 +102,6 @@ class ResponseController{
                 self::setError('Mensaje no identificado',self::$_extra);
             /*case 101://Validacion de correo
                 self::setError('El campo '.$statement.' no cumple con condiciones mínimas');
-                break;
-            case 201://Get Users
-                self::setResult($statement);
                 break;
             case 202://Create User
                 self::setInfo('Usuario creado');
