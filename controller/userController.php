@@ -1,12 +1,14 @@
 <?php
 
+require_once 'model/userModel.php';
+
 class UserController{
     private $_method;
     private $_complement;
     private $_data;
     private $_add;
 
-    const FIELDS = array('user_id','user_email','user_pass');
+    const FIELDS = array('user_id','user_name','user_lastName','user_email','user_pass','user_phone','user_age','us_identifier','us_key');
 
     function __construct($method, $complement=null, $data=null,$add=null){
         $this->_method = $method;
@@ -17,16 +19,22 @@ class UserController{
 
     public function index(){
         try{
-            $this->validateData();
             switch ($this->_method){
                 case 'GET':
+                    echo 'Getting';
+                    break;
+                case 'POST':
+                    $this->validateData();
                     $this->generateSalting();
+                    echo UserModel::createUser($this->_data);
+                    //ResponseController::response(UserModel::createUser($this->_data));
                     break;
                 default:
                     ResponseController::response(104);
             }
         }
         catch(Exception $e){
+            echo $e->getMessage();
             ResponseController::response((int)$e->getMessage());
         }
     }
@@ -45,7 +53,7 @@ class UserController{
         $patterns = array(
             "user_email"=>"/^[a-zA-Z0-9_.]{8,}@gmail.com$/",
             "user_pass"=>"/^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*[0-9]+)(?=.*[!@#$%^&*(){}\\[\\]]+)[a-zA-Z0-9!@#$%^&*(){}\\[\\]]{8,}$/",
-            "user_phone"=>"/^[0-9]{7}$/"
+            "user_phone"=>"/^[0-9]{10}$/"
         );
         if(is_array($this->_data)){
             $dataAO = new ArrayObject($this->_data);
@@ -58,15 +66,20 @@ class UserController{
                     if(!$result) {
                         throw new Exception(220+$index);
                     };
+                    $index++;
                 }
-                $index++;
                 $iter->next();
             }
         }
     }
 
+    private function existData(){
+        if($this->_data == null) throw new Exception(299);
+    }
+
     private function validateData(){
         try{
+            $this->existData();
             $this->validateFields();
             $this->validateValues();
         }
@@ -90,10 +103,9 @@ class UserController{
                 $identifier = str_replace("$","y78",$identifier);
                 $trimmed_data['us_identifier']=$identifier;
             }
-            echo json_encode($trimmed_data);
-            return $trimmed_data;
+            $this->_data=$trimmed_data;
+            return;
         }
-        return $this->_data;
     }
 }
 

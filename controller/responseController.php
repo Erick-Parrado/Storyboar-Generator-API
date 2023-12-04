@@ -34,18 +34,22 @@ class ResponseController{
                 self::$_response['credentials'] = null;
                 self::$_response['header'] = "HTTP/1.1 400 FAIL";
                 break;
+            case 200:
+                self::setInfo('Usuario creado');
+            case 209:
+                self::setInfo('Usuario ya existe');
             case 220:
                 self::setError('Campos no reconocidos en la data');
                 break;
             case 221:
-                self::setError('Email no cumple con las condiciones mínimas',
+                self::setError('user_email no cumple con las condiciones mínimas',
                     array(
                         'Longitud de al menos 8 cárteres',
                         'Dominio gmail.com'
                 ));
                 break;
             case 222:
-                self::setError('Email no cumple con las condiciones mínimas',
+                self::setError('user_pass no cumple con las condiciones mínimas',
                     array(
                         'Al menos una minúscula',
                         'Al menos una mayúscula',
@@ -55,11 +59,14 @@ class ResponseController{
                 ));
                 break;
             case 223:
-                self::setError('Email no cumple con las condiciones mínimas',
+                self::setError('user_phone no cumple con las condiciones mínimas',
                     array(
-                    'Longitud de al menos 8 cárteres',
-                    'Dominio gmail.com'
+                    'Longitud de 10 dígitos',
+                    'Unicamente números'
                 ));
+                break;
+            case 299:
+                self::setError('Data no ha sido proveída');
                 break;
             case 900:
                 self::setInfo('Conexión realizada');
@@ -67,11 +74,13 @@ class ResponseController{
             case 904:
                 self::setInfo('Servicio desconocido');
                 break;
+            case 910:
+                self::setInfo('Error en sentencia SQL');
+                break;
             case 909:
                 self::setInfo($extra);
                 break;
             default:
-                self::$_cod = 0;
                 self::setError('Mensaje no identificado');
             /*case 101://Validacion de correo
                 self::setError('El campo '.$statement.' no cumple con condiciones mínimas');
