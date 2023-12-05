@@ -17,7 +17,7 @@ class UserModel{
     //Extras
     static private function emailExist($data){
         $query = "SELECT user_email FROM users WHERE user_email=:user_email";
-        $count = self::executeQuery($query,$data)->rowCount();
+        $count = self::executeQuery($query,200,$data)[1]->rowCount();
         return ($count>0)?1:0;
     }
 

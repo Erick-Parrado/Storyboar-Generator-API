@@ -82,6 +82,17 @@ class ResponseController{
                     'Unicamente números'
                 ));
                 break;
+            case 229:
+                self::setError('El enpoint de users requiere todos los campos',
+                    array(
+                        'user_id',
+                        'user_name',
+                        'user_lastName',
+                        'user_email',
+                        'user_pass',
+                        'user_phone'
+                ));
+                break;
             case 299:
                 self::setError('Data no ha sido proveída');
                 break;

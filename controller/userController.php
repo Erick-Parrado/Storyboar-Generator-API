@@ -5,7 +5,7 @@ require_once 'controller/endpointController.php';
 
 class UserController extends EndpointController{
     function __construct($method, $complement=null, $data=null,$add=null){
-        $fields = array('user_id','user_name','user_lastName','user_email','user_pass','user_phone','user_age','us_identifier','us_key');
+        $fields = array('user_id','user_name','user_lastName','user_email','user_pass','user_phone','us_identifier','us_key');
         parent::__construct(200,$method,$complement,$data,$add,$fields);
     }
 
@@ -18,6 +18,7 @@ class UserController extends EndpointController{
                     break;
                 case 'POST':
                     $this->existData();
+                    $this->strictFields();
                     $this->validateFields();
                     $this->validateValues();
                     $this->generateSalting();

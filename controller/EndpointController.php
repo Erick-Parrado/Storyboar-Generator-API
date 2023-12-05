@@ -16,6 +16,18 @@ class EndpointController{
         $this->_fields = $fields;
         $this->_codBase = $codBase;
     }
+
+    protected function strictFields(){
+        $fieldsAO = new ArrayObject($this->_fields);
+        $iter = $fieldsAO -> getIterator();
+        while($iter->valid()){
+            if(!in_array($iter->current(),array_keys($this->_data))){
+                throw new Exception($this->_codBase+29);
+            }
+            $iter->next();
+        }
+
+    }
     
 
     protected function validateFields(){
