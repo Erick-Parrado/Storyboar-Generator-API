@@ -24,13 +24,20 @@ class UserController extends EndpointController{
                     $this->generateSalting();
                     $response = UserModel::createUser($this->_data);
                     break;
+                case 'PUT':
+                    $this->existData();
+                    $this->validateFields();
+                    $this->validateValues();
+                    $this->generateSalting();
+                    $response = UserModel::updateUser($this->_complement,$this->_data);
+                    break;
                 default:
                     $response = 104;
             }
             ResponseController::response($response);
         }
         catch(Exception $e){
-            ResponseController::response((int)$e->getMessage(),$e->getMessage());
+            ResponseController::response((int)$e->getMessage());
         }
     }
 

@@ -52,8 +52,14 @@ class ResponseController{
             case 201://Get Users
                 self::setResult(self::$_extra);
                 break;
+            case 202://Put Users
+                self::setInfo('Usuario actualizado');
+                break;
             case 209:
                 self::setInfo('Usuario ya existe');
+                break;
+            case 219:
+                self::setError('El usuario no existe');
                 break;
             case 220:
                 self::setError('Campos no reconocidos en la data de users');

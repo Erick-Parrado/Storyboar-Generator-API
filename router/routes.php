@@ -26,7 +26,7 @@ if ($routesArray[3] == ''){
 
     switch($endPoint){
         case 'users':
-            $petition = new UserController($method,$complement,$_POST);
+            $petition = new UserController($method,$complement,$_POST,$add);
             break;
         case 'projects':
             echo 'Projects';
