@@ -55,8 +55,14 @@ class ResponseController{
             case 202://Put Users
                 self::setInfo('Usuario actualizado');
                 break;
+            case 203://Delete Users
+                self::setInfo('Usuario eliminado');
+                break;
             case 209:
                 self::setInfo('Usuario ya existe');
+                break;
+            case 210://Delete All Users
+                self::setInfo('Base de datos reiniciada');
                 break;
             case 219:
                 self::setError('El usuario no existe');

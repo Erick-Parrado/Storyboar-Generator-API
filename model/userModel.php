@@ -46,6 +46,23 @@ class UserModel{
         return 219;
     }
 
+    //DELETE
+    static public function deleteUser($id){
+        $data['user_id']=$id;
+        if(self::idExist($data)){
+            $query = 'DELETE FROM users WHERE user_id = :user_id';
+            return self::executeQuery($query,203,$data);
+        }
+        return 219;
+    }
+    
+    static public function deleteAllUsers(){
+        $query = 'DELETE FROM users';
+        $reset = 'ALTER TABLE users AUTO_INCREMENT = 1';
+        self::executeQuery($reset,211);
+        return self::executeQuery($query,210);
+    }
+
     //Extras
     static private function emailExist($data){
         $query = "SELECT user_email FROM users WHERE user_email=:user_email";
@@ -60,7 +77,7 @@ class UserModel{
     }
 
     //Ejecutor de queries
-    static public function  executeQuery($query,$confirmCod,$data=null,$fetch=false){
+    static public function  executeQuery($query,$confirmCod = 0,$data=null,$fetch=false){
         $fields = array('user_id','user_name','user_lastName','user_email','user_pass','user_phone','user_age','us_identifier','us_key');
         $statement= Connection::doConnection()->prepare($query);
         if(isset($data)){

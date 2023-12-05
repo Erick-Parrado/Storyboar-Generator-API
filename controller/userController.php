@@ -5,7 +5,7 @@ require_once 'controller/endpointController.php';
 
 class UserController extends EndpointController{
     function __construct($method, $complement=null, $data=null,$add=null){
-        $fields = array('user_id','user_name','user_lastName','user_email','user_pass','user_phone','us_identifier','us_key');
+        $fields = array('user_name','user_lastName','user_email','user_pass','user_phone','us_identifier','us_key');
         parent::__construct(200,$method,$complement,$data,$add,$fields);
     }
 
@@ -18,10 +18,11 @@ class UserController extends EndpointController{
                     break;
                 case 'POST':
                     $this->existData();
-                    $this->strictFields();
                     $this->validateFields();
                     $this->validateValues();
                     $this->generateSalting();
+                    $this->strictFields();
+                    //var_dump($this->_data);
                     $response = UserModel::createUser($this->_data);
                     break;
                 case 'PUT':
@@ -30,6 +31,15 @@ class UserController extends EndpointController{
                     $this->validateValues();
                     $this->generateSalting();
                     $response = UserModel::updateUser($this->_complement,$this->_data);
+                    break;
+                case 'DELETE':
+                   if($this->_add === 'ALL' && $this->_complement === 'B1W4sA'){
+                        $response = UserModel::deleteAllUsers();
+                    }
+                    else{
+                        $response = UserModel::deleteUser($this->_complement);
+                    }
+                    
                     break;
                 default:
                     $response = 104;
