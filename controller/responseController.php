@@ -5,6 +5,8 @@
 300 Proyecto
 400 Escena
 500 Plano
+600 Login
+700 Acceso
 900 Base de datos
 */
 
@@ -123,28 +125,7 @@ class ResponseController{
                 break;
             default:
                 self::setError('Mensaje no identificado',self::$_extra);
-            /*case 101://Validacion de correo
-                self::setError('El campo '.$statement.' no cumple con condiciones mínimas');
-                break;
-            case 202://Create User
-                self::setInfo('Usuario creado');
-                break;
-            case 203://Update User
-                self::setInfo('Usuario actualizado');
-                break;
-            case 204://Delete User
-                self::setInfo('Usuario elimindo');
-                break;
-            case 205://Delete User
-                self::setInfo('Usuario activado');
-                break;
-            case 209: //Usuario no existe
-                self::setError('Usuario no existe');
-                break;
-            case 404:
-                self::setError('Ruta no encontrada');
-                break;
-            case 501:
+            /*
             case 503://Error de credenciales
                 self::setError('ERROR EN CREDENCIALES');
                 self::$_response['credentials'] = null;

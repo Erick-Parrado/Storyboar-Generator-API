@@ -5,7 +5,15 @@ require_once 'controller/endpointController.php';
 
 class UserController extends EndpointController{
     function __construct($method, $complement=null, $data=null,$add=null){
-        $fields = array('user_name','user_lastName','user_email','user_pass','user_phone','us_identifier','us_key');
+        $fields = array(
+            'user_id'=>"/^\d*$/",
+            'user_name'=>"/^.*$/",
+            'user_lastName'=>"/^.*$/",            
+            "user_email"=>"/^([a-zA-Z0-9_.]{8,})@([a-z]{5,})\.([a-z]{2,3})(\.[a-z]{2,3})?$/",
+            "user_pass"=>"/^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*[0-9]+)(?=.*[!@#$%^&*(){}\\[\\]]+)[a-zA-Z0-9!@#$%^&*(){}\\[\\]]{8,}$/",
+            "user_phone"=>"/^[0-9]{10}$/",
+            'us_identifier'=>"/^.*$/",
+            'us_key'=>"/^.*$/");
         parent::__construct(200,$method,$complement,$data,$add,$fields);
     }
 
@@ -17,23 +25,20 @@ class UserController extends EndpointController{
                     $response = UserModel::readUser($this->_complement);
                     break;
                 case 'POST':
-                    $this->existData();
-                    $this->validateFields();
+                    $strictFields = array('user_name','user_lastName','user_email','user_pass','user_phone');
+                    $this->setStrict($strictFields);
                     $this->validateValues();
                     $this->generateSalting();
-                    $this->strictFields();
                     //var_dump($this->_data);
                     $response = UserModel::createUser($this->_data);
                     break;
                 case 'PUT':
-                    $this->existData();
-                    $this->validateFields();
                     $this->validateValues();
                     $this->generateSalting();
                     $response = UserModel::updateUser($this->_complement,$this->_data);
                     break;
                 case 'DELETE':
-                   if($this->_add === 'ALL' && $this->_complement === 'B1W4sA'){
+                    if($this->_add === 'ALL' && $this->_complement === 'B1W4sA'){
                         $response = UserModel::deleteAllUsers();
                     }
                     else{
@@ -48,30 +53,6 @@ class UserController extends EndpointController{
         }
         catch(Exception $e){
             ResponseController::response((int)$e->getMessage());
-        }
-    }
-
-    private function validateValues(){
-        $patterns = array(
-            "user_email"=>"/^[a-zA-Z0-9_.]{8,}@gmail.com$/",
-            "user_pass"=>"/^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*[0-9]+)(?=.*[!@#$%^&*(){}\\[\\]]+)[a-zA-Z0-9!@#$%^&*(){}\\[\\]]{8,}$/",
-            "user_phone"=>"/^[0-9]{10}$/"
-        );
-        if(is_array($this->_data)){
-            $dataAO = new ArrayObject($this->_data);
-            $iter = $dataAO -> getIterator();
-            $index = 1;
-            while($iter->valid()){
-                $pattern = (array_key_exists($iter->key(),$patterns))?$patterns[$iter->key()]:null;
-                if(isset($pattern)){
-                    $result = preg_match($pattern,$iter->current());
-                    if(!$result) {
-                        throw new Exception(220+$index);
-                    };
-                    $index++;
-                }
-                $iter->next();
-            }
         }
     }
 

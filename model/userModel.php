@@ -12,7 +12,7 @@ class UserModel{
     //POST
     static public function createUser($dataIn){
         if(!(self::emailExist($dataIn))){
-            $query = "INSERT INTO `users`(`user_name`, `user_lastName`, `user_email`, `user_pass`, `user_phone`, `user_age`, `us_identifier`, `us_key`) VALUES (:user_name,:user_lastName,:user_email,:user_pass,:user_phone,:user_age,:us_identifier,:us_key)";
+            $query = "INSERT INTO `users`(`user_name`, `user_lastName`, `user_email`, `user_pass`, `user_phone`, `us_identifier`, `us_key`) VALUES (:user_name,:user_lastName,:user_email,:user_pass,:user_phone,:us_identifier,:us_key)";
             return self::executeQuery($query,200,$dataIn);
         }
         return 209;
@@ -61,6 +61,19 @@ class UserModel{
         $reset = 'ALTER TABLE users AUTO_INCREMENT = 1';
         self::executeQuery($reset,211);
         return self::executeQuery($query,210);
+    }
+
+    //Login
+    static public function login($dataIn){
+        if(self::emailExist($dataIn)){
+            $query = 'SELECT user_identifier,user_key FROM users WHERE user_email=:user_email AND user_pass=:user_pass';
+            $count = self::executeQuery($query,1,$dataIn)[1]->rowCount();
+            if($count>0){
+                return self::executeQuery($query,110,$dataIn);
+            }
+            return 119;
+        }
+        return 219;
     }
 
     //Extras
