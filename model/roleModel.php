@@ -1,11 +1,23 @@
 <?php
 class RoleModel{
-    static public function readRoles(){
-        $query = 'SELECT '
+    static public function readRoles($role_id){
+        $data= [];
+        $query = 'SELECT role_id,role_name FROM roles';
+        if($role_id > 0 && $role_id != null){
+            $data['role_id'] = $role_id;
+            $query .= ' WHERE role_id =:role_id';
+        }
+        return self::executeQuery($query,751,$data);
+    }
+
+    static public function idExist($data){
+        $query = "SELECT role_id FROM roles WHERE role_id=:role_id";
+        $count = self::executeQuery($query,1,$data)[1]->rowCount();
+        return ($count>0)?1:0;
     }
 
     static public function  executeQuery($query,$confirmCod = 0,$data=null,$fetch=false){
-        $fields = array('user_id','user_name','user_lastName','user_email','user_pass','user_phone','user_age','us_identifier','us_key');
+        $fields = array('role_id','role_name');
         $statement= Connection::doConnection()->prepare($query);
         if(isset($data)){
             foreach(array_keys($fields) as $index){
@@ -14,31 +26,10 @@ class RoleModel{
                 if(!$result) continue;
                 switch($index){
                     case 0:
-                        $statement->bindParam(":user_id", $data["user_id"],PDO::PARAM_INT);
+                        $statement->bindParam(":role_id", $data["role_id"],PDO::PARAM_INT);
                         break;
                     case 1:
-                        $statement->bindParam(":user_name", $data["user_name"],PDO::PARAM_STR);
-                        break;
-                    case 2:
-                        $statement->bindParam(":user_lastName", $data["user_lastName"],PDO::PARAM_STR);
-                        break;
-                    case 3:
-                        $statement->bindParam(":user_email", $data["user_email"],PDO::PARAM_STR);
-                        break;
-                    case 4:
-                        $statement->bindParam(":user_pass", $data["user_pass"],PDO::PARAM_STR);
-                        break;
-                    case 5:
-                        $statement->bindParam(":user_phone", $data["user_phone"],PDO::PARAM_STR);
-                        break;
-                    case 6:
-                        $statement->bindParam(":user_age", $data["user_age"],PDO::PARAM_INT);
-                        break;
-                    case 7:
-                        $statement->bindParam(":us_identifier", $data["us_identifier"],PDO::PARAM_STR);
-                        break;
-                    case 8:
-                        $statement->bindParam(":us_key", $data["us_key"],PDO::PARAM_STR);
+                        $statement->bindParam(":role_name", $data["role_name"],PDO::PARAM_STR);
                         break;
                 }
             }

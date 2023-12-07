@@ -3,6 +3,7 @@ require_once 'controller/endpointController.php';
 require_once 'model/projectModel.php';
 require_once 'model/userModel.php';
 require_once 'model/teamModel.php';
+require_once 'model/roleModel.php';
 
 class TeamController extends EndpointController{
     function __construct($method, $complement=null, $data=null,$add=null){
@@ -44,6 +45,9 @@ class TeamController extends EndpointController{
                     $this->setStrict($strictFields);
                     $this->strictFields();
                     $response = TeamModel::accessProject($this->_data);
+                    break;
+                case 'PUT':
+                    $response = TeamModel::updateRole($this->_complement,$this->_data);
                     break;
                 default:
                     $response = 104;

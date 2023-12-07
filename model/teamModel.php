@@ -1,6 +1,7 @@
 <?php
 require_once 'model/projectModel.php';
 require_once 'model/userModel.php';
+require_once 'model/roleModel.php';
 
 class TeamModel{
     //GET
@@ -22,8 +23,6 @@ class TeamModel{
         return 219;
     }
 
-    //
-
     //POST
     static public function accessProject($data){
         $pinProject =ProjectModel::projectByPIN($data);
@@ -41,6 +40,17 @@ class TeamModel{
         }
         $query = 'INSERT INTO team_members(team_id,proj_id,user_id,role_id) VALUES (:team_id,:proj_id,:user_id,:role_id)';
         return self::executeQuery($query,700,$data);
+    }
+
+    //PUT
+    static public function updateRole($team_id,$role_id){
+        $data = $role_id;
+        $data['team_id'] = $team_id;
+        if(!self::accessMade($data)) return 710;
+        if(!RoleModel::idExist($data)) return 759;
+        $query = 'UPDATE team_members SET role_id =:role_id WHERE team_id = :team_id';
+
+        return self::executeQuery($query,703,$data);
     }
 
     //Extras

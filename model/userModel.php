@@ -1,10 +1,10 @@
 <?php
 class UserModel{
-    static public function readUser($id=null){
+    static public function readUser($user_id=null){
         $data = [];
         $query = 'SELECT user_id,user_name,user_lastName,user_email,user_pass,user_phone FROM users';
-        if($id > 0 && $id != null){
-            $data['user_id'] = $id;
+        if($user_id > 0 && $user_id != null){
+            $data['user_id'] = $user_id;
             $query .= ' WHERE user_id =:user_id';
         }
         return self::executeQuery($query,201,$data);

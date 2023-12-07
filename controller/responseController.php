@@ -159,18 +159,39 @@ class ResponseController{
             case 701://Get Users
                 self::setResult(self::$_extra);
                 break;
-            case 702://Get Teams
+            case 702://Get Projects
                 self::setResult(self::$_extra);
+                break;
+            case 703://Put Team
+                self::setInfo('Se actualizo rol');
                 break;
             case 709://Ingreso 
                 self::setError('Ya se ha creado el acceso'); 
                 break;  
+            case 710://Ingreso 
+                self::setError('El acceso no existe'); 
+                break;  
+            case 720:
+                self::setError('Campos no reconocidos para acceso de proyectos');
+                break;   
             case 721:
                 self::setError('Se requiere id');
                 break;   
             case 722:
                 self::setError('Se requiere especificar consulta');
-                break;          
+                break;    
+            case 729:
+                self::setError('Para el acceso se requiere:',array(
+                    'user_id',
+                    'proj_pin'
+                ));  
+                break;    
+            case 751:
+                self::setResult(self::$_extra);
+                break;
+            case 759:
+                self::setError('Rol no existe');
+                break;
             case 900:
                 self::setInfo('Conexión realizada');
                 break;
