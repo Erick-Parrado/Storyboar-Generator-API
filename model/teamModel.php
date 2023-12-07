@@ -3,6 +3,25 @@ require_once 'model/projectModel.php';
 require_once 'model/userModel.php';
 
 class TeamModel{
+    //GET
+    static public function readUsers($proj_id){
+        $data['proj_id'] = $proj_id;
+        if(ProjectModel::idExist($data)){
+            $query = 'SELECT team_id,proj_id,users.user_id,users.user_name,users.user_lastName,users.user_email,users.user_phone FROM team_members INNER JOIN users ON team_members.user_id = users.user_id WHERE team_members.proj_id = :proj_id';
+            return self::executeQuery($query,701,$data);
+        }
+        return 319;
+    }
+    
+    static public function readProjects($user_id){
+        $data['user_id'] = $user_id;
+        if(UserModel::idExist($data)){
+            $query = 'SELECT team_id,team_members.proj_id,proj_tittle,proj_producer,proj_description FROM team_members INNER JOIN projects ON team_members.proj_id = projects.proj_id WHERE team_members.user_id = :user_id';
+            return self::executeQuery($query,702,$data);
+        }
+        return 219;
+    }
+
     //POST
     static public function accessProject($id,$pin){
         $pinProject =ProjectModel::projectByPIN($pin);

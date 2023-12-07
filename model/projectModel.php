@@ -53,7 +53,7 @@ class ProjectModel{
         return 319;
     }
     //Extras
-    static private function idExist($data){
+    static public function idExist($data){
         $query = "SELECT proj_id FROM projects WHERE proj_id=:proj_id";
         $count = self::executeQuery($query,1,$data)[1]->rowCount();
         return ($count>0)?1:0;

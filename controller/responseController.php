@@ -156,9 +156,21 @@ class ResponseController{
             case 700://Ingreso 
                 self::setInfo('Se ingreso exitosamente'); 
                 break; 
+            case 701://Get Users
+                self::setResult(self::$_extra);
+                break;
+            case 702://Get Teams
+                self::setResult(self::$_extra);
+                break;
             case 709://Ingreso 
                 self::setError('Ya se ha creado el acceso'); 
-                break;               
+                break;  
+            case 721:
+                self::setError('Se requiere id');
+                break;   
+            case 722:
+                self::setError('Se requiere especificar consulta');
+                break;          
             case 900:
                 self::setInfo('Conexión realizada');
                 break;
