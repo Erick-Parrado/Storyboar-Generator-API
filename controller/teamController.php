@@ -33,6 +33,9 @@ class TeamController extends EndpointController{
                             case 'users':
                                 $response = TeamModel::readUsers($this->_complement);
                                 break;
+                            case 'roles':
+                                $response = RoleModel::readRoles($this->_complement);
+                                break;
                             default:
                                 $response = 722;
                         }
