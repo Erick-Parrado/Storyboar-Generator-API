@@ -66,14 +66,16 @@ class UserModel{
     //Login
     static public function login($dataIn){
         if(self::emailExist($dataIn)){
-            $query = 'SELECT user_identifier,user_key FROM users WHERE user_email=:user_email AND user_pass=:user_pass';
+            $query = 'SELECT us_identifier,us_key FROM users WHERE user_email=:user_email AND user_pass=:user_pass';
             $count = self::executeQuery($query,1,$dataIn)[1]->rowCount();
             if($count>0){
-                return self::executeQuery($query,110,$dataIn);
+                $response = self::executeQuery($query,600,$dataIn,true);
+                //var_dump($response);
+                return $response;
             }
-            return 119;
+            return 604;
         }
-        return 219;
+        return 604;
     }
 
     //Extras
@@ -133,7 +135,7 @@ class UserModel{
         if(preg_match('/^SELECT.*$/',$query)){
             $error = $statement->execute() ? false : Connection::doConnection()->errorInfo();
             if($error != false) return array(910,$error->getMessage());
-            if($fetch) return $statement->fetchAll(PDO::FETCH_ASSOC);
+            if($fetch) return array($confirmCod,$statement->fetchAll());
             return array($confirmCod,$statement);
         }
         else{

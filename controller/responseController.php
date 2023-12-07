@@ -33,20 +33,11 @@ class ResponseController{
             case 109:
                 self::setError('Exceso de parametros');
                 break;
-            case 110:
-                self::setInfo('OK');
-                self::$_response['credentials'] = self::$_extra;
-                break;
             case 114:
                 self::setError('NO TIENE CREDENCIALES');
                 break;
             case 115:
                 self::setError('NO TIENE ACCESO');
-                break;
-            case 119:
-                self::setError('ERROR EN CREDENCIALES');
-                self::$_response['credentials'] = null;
-                self::$_response['header'] = "HTTP/1.1 400 FAIL";
                 break;
             case 200://Post Users
                 self::setInfo('Usuario creado');
@@ -110,18 +101,27 @@ class ResponseController{
             case 299:
                 self::setError('Data no ha sido proveída');
                 break;
+            case 600:
+                self::setInfo('Inicio de sesion','OK');
+                self::$_response['credentials'] = self::$_extra;
+                break;
+            case 604:
+                self::setError('ERROR EN CREDENCIALES');
+                self::$_response['credentials'] = null;
+                self::$_response['header'] = "HTTP/1.1 400 FAIL";
+                break;
             case 900:
                 self::setInfo('Conexión realizada');
                 break;
             case 904:
                 self::setInfo('Servicio desconocido');
                 break;
-            case 910:
-                self::setInfo('Error en sentencia SQL',self::$_extra);
-                break;
             case 909:
                 self::setInfo('Error de conexion');
                 self::$_response['info'] = self::$_extra;
+                break;
+            case 910:
+                self::setInfo('Error en sentencia SQL',self::$_extra);
                 break;
             default:
                 self::setError('Mensaje no identificado',self::$_extra);

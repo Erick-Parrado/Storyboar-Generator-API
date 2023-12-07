@@ -1,5 +1,6 @@
 <?php
 require_once 'controller/userController.php';
+require_once 'controller/loginController.php';
 
 $routesArray = array_filter(explode("/",$_SERVER['REQUEST_URI']));
 
@@ -44,7 +45,7 @@ if ($routesArray[3] == ''){
             break;
     
         case 'login':
-            echo 'Login';
+            $petition = new loginController($method,$complement,$_POST);
             /*if(isset($_POST) && $method=='POST'){
                 $user = new LoginController($method, $_POST);
                 $user -> index();
