@@ -22,10 +22,11 @@ class TeamModel{
         return 219;
     }
 
+    //
+
     //POST
-    static public function accessProject($id,$pin){
-        $pinProject =ProjectModel::projectByPIN($pin);
-        $data['user_id'] = $id;
+    static public function accessProject($data){
+        $pinProject =ProjectModel::projectByPIN($data);
         $data['role_id'] = 3;
         if($pinProject == false){
             return 319;
@@ -34,7 +35,7 @@ class TeamModel{
             return 219;
         }
         $data['proj_id'] = $pinProject;
-        $data['team_id'] = $pinProject.''.$id;
+        $data['team_id'] = $data['proj_id'].''.$data['user_id'];
         if(self::accessMade($data)){
             return 709;
         }

@@ -10,7 +10,8 @@ class TeamController extends EndpointController{
             'team_id',
             'role_id',
             'user_id',
-            'proj_id'
+            'proj_id',
+            'proj_pin'
         );
         parent::__construct(700,$method,$complement,$data,$add,$fields);
     }
@@ -36,10 +37,13 @@ class TeamController extends EndpointController{
                         }
                     break;
                 case 'POST':
-                    if($this->_add != null && $this->_complement != null){
-                       $response = TeamModel::accessProject($this->_complement,$this->_add);
-                    }
-                    $response = 104;
+                    $strictFields = array(
+                        'user_id',
+                        'proj_pin'
+                    );
+                    $this->setStrict($strictFields);
+                    $this->strictFields();
+                    $response = TeamModel::accessProject($this->_data);
                     break;
                 default:
                     $response = 104;

@@ -70,14 +70,23 @@ class ProjectModel{
         if(!is_array($pin)){
             $data['proj_pin'] = $pin;
         }
+        else{
+            $data = $pin;
+        }
         $query = "SELECT proj_pin FROM projects WHERE proj_pin=:proj_pin";
         $count = self::executeQuery($query,1,$data)[1]->rowCount();
         return ($count>0)?1:0;
     }
 
     static public function projectByPIN($pin){
-        $data['proj_pin'] = $pin;
-        if(self::pinExist($pin)){
+        $data =[];
+        if(!is_array($pin)){
+            $data['proj_pin'] = $pin;
+        }
+        else{
+            $data = $pin;
+        }
+        if(self::pinExist($data)){
             $query = 'SELECT proj_id FROM projects WHERE proj_pin=:proj_pin';
             $project = self::executeQuery($query,1,$data,true)[1][0]['proj_id'];
             return $project;

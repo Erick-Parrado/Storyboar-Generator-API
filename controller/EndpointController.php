@@ -65,7 +65,7 @@ class EndpointController{
     }
 
     protected function strictFields(){
-        $this->validateFields();
+        $this->validateValues();
         if($this->_strictFields == null){
             $this->_strictFields = $this->_fields;
         }
