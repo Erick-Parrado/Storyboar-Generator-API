@@ -6,7 +6,7 @@
 400 Escena
 500 Plano
 600 Login
-700 Acceso
+700 Team
 900 Base de datos
 */
 
@@ -138,8 +138,7 @@ class ResponseController{
                 break;
             case 621:
             case 622:
-                self::$_cod = 604;
-                self::response(self::$_cod);
+                self::codeChange(604);
                 break;
             case 620:
                 self::setError('Campos no reconocidos para el inicio de sesion');
@@ -154,6 +153,12 @@ class ResponseController{
             case 699:
                 self::setError('Data no ha sido proveída');
                 break;
+            case 700://Ingreso 
+                self::setInfo('Se ingreso exitosamente'); 
+                break; 
+            case 709://Ingreso 
+                self::setError('Ya se ha creado el acceso'); 
+                break;               
             case 900:
                 self::setInfo('Conexión realizada');
                 break;
@@ -192,6 +197,11 @@ class ResponseController{
         self::$_response['info']['count']=$statement->rowCount();
         self::$_response['response']=$statement->fetchAll();
 
+    }
+
+    static private function codeChange($cod){
+        self::$_cod = $cod;
+        self::response(self::$_cod);
     }
 }
 ?>

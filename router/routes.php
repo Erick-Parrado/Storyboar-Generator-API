@@ -2,6 +2,7 @@
 require_once 'controller/userController.php';
 require_once 'controller/loginController.php';
 require_once 'controller/projectController.php';
+require_once 'controller/teamController.php';
 
 $routesArray = array_filter(explode("/",$_SERVER['REQUEST_URI']));
 
@@ -9,7 +10,6 @@ $routesArray = array_filter(explode("/",$_SERVER['REQUEST_URI']));
 $data = array();
 $data['raw_input'] = @file_get_contents('php://input');
 $_POST = json_decode($data['raw_input'], true);
-
 
 //Validacion de endpoint
 if ($routesArray[3] == ''){
@@ -41,8 +41,8 @@ if ($routesArray[3] == ''){
             echo 'Planes';
             break;
             
-        case 'access':
-            echo 'Access';
+        case 'teams':
+            $petition = new teamController($method,$complement,$_POST,$add);
             break;
     
         case 'login':

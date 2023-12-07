@@ -6,14 +6,15 @@ require_once 'controller/endpointController.php';
 class UserController extends EndpointController{
     function __construct($method, $complement=null, $data=null,$add=null){
         $fields = array(
-            'user_id'=>"/^\d*$/",
-            'user_name'=>"/^.*$/",
-            'user_lastName'=>"/^.*$/",            
+            'user_id',
+            'user_name',
+            'user_lastName',            
             "user_email"=>"/^([a-zA-Z0-9_.]{8,})@([a-z]{5,})\.([a-z]{2,3})(\.[a-z]{2,3})?$/",
             "user_pass"=>"/^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*[0-9]+)(?=.*[!@#$%^&*(){}\\[\\]]+)[a-zA-Z0-9!@#$%^&*(){}\\[\\]]{8,}$/",
             "user_phone"=>"/^[0-9]{10}$/",
-            'us_identifier'=>"/^.*$/",
-            'us_key'=>"/^.*$/");
+            'us_identifier',
+            'us_key'
+        );
         parent::__construct(200,$method,$complement,$data,$add,$fields);
     }
 
