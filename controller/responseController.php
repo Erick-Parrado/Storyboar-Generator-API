@@ -156,14 +156,17 @@ class ResponseController{
             case 700://Ingreso 
                 self::setInfo('Se ingreso exitosamente'); 
                 break; 
-            case 701://Get Users
+            case 701://Get Users in Teams
                 self::setResult(self::$_extra);
                 break;
             case 702://Get Projects
                 self::setResult(self::$_extra);
                 break;
-            case 703://Put Team
+            case 703://Put Team in Teams
                 self::setInfo('Se actualizo rol');
+                break;
+            case 704://Delete User from Team
+                self::setInfo('Se eliminio miembro');
                 break;
             case 709://Ingreso 
                 self::setError('Ya se ha creado el acceso'); 

@@ -43,14 +43,21 @@ class TeamModel{
     }
 
     //PUT
-    static public function updateRole($team_id,$role_id){
-        $data = $role_id;
-        $data['team_id'] = $team_id;
+    static public function updateRole($data){
+        $data['team_id'] = $data['proj_id'].''.$data['user_id'];
         if(!self::accessMade($data)) return 710;
         if(!RoleModel::idExist($data)) return 759;
         $query = 'UPDATE team_members SET role_id =:role_id WHERE team_id = :team_id';
 
         return self::executeQuery($query,703,$data);
+    }
+
+    //DELETE
+    static public function deleteMember($data){
+        $data['team_id'] = $data['proj_id'].''.$data['user_id'];
+        if(!self::accessMade($data)) return 710;
+        $query = 'DELETE FROM team_members WHERE team_id = :team_id';
+        return self::executeQuery($query,704,$data);
     }
 
     //Extras

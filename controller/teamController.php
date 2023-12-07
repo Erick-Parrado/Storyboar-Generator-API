@@ -22,7 +22,7 @@ class TeamController extends EndpointController{
             $response = 0;
             switch($this->_method){
                 case 'GET':
-                        if($this->_complement == null){
+                        if($this->_complement == null && !is_numeric($this->_complement)){
                             $response = 721;
                             break;
                         }
@@ -47,7 +47,23 @@ class TeamController extends EndpointController{
                     $response = TeamModel::accessProject($this->_data);
                     break;
                 case 'PUT':
-                    $response = TeamModel::updateRole($this->_complement,$this->_data);
+                    $strictFields = array(
+                        'user_id',
+                        'proj_id',
+                        'role_id'
+                    );
+                    $this->setStrict($strictFields);
+                    $this->strictFields();
+                    $response = TeamModel::updateRole($this->_data);
+                    break;
+                case 'DELETE':
+                    $strictFields = array(
+                        'user_id',
+                        'proj_id'
+                    );
+                    $this->setStrict($strictFields);
+                    $this->strictFields();
+                    $response = TeamModel::deleteMember($this->_data);
                     break;
                 default:
                     $response = 104;

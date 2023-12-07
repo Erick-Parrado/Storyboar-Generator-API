@@ -40,11 +40,9 @@ if ($routesArray[3] == ''){
         case 'planes':
             echo 'Planes';
             break;
-            
         case 'teams':
             $petition = new teamController($method,$complement,$_POST,$add);
             break;
-    
         case 'login':
             $petition = new loginController($method,$complement,$_POST);
             break;
