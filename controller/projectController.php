@@ -41,6 +41,9 @@ class ProjectController extends EndpointController{
                     $this->validateFields();
                     $response = ProjectModel::updateProject($this->_complement,$this->_data);
                     break;
+                case 'DELETE':
+                    $response = ProjectModel::deleteProject($this->_complement);
+                    break;
                 default:
                     $response = 104;
             }

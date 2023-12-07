@@ -106,11 +106,15 @@ class ResponseController{
             case 302:
                 self::setInfo('Proyecto actualizado');
                 break;
+            case 303:
+                self::setInfo('Proyecto eliminado');
+                break;
             case 309:
                 self::setError('Este proyecto ya existe en la productora');
                 break;
             case 319:
                 self::setError('El proyecto no existe');
+                break;
             case 320:
                 self::setError('Campos no reconocidos en la data de projects');
                 break;

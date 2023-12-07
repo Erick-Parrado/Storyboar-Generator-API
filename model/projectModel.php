@@ -44,7 +44,14 @@ class ProjectModel{
     }
 
     //DELETE
-
+    static public function deleteProject($id){
+        $data['proj_id'] = $id;
+        if(self::idExist($data)){
+            $query = "DELETE FROM projects WHERE proj_id = :proj_id";
+            return self::executeQuery($query,303,$data);
+        }
+        return 319;
+    }
     //Extras
     static private function idExist($data){
         $query = "SELECT proj_id FROM projects WHERE proj_id=:proj_id";
