@@ -18,6 +18,9 @@ class ProjectController extends EndpointController{
     public function index(){
         try{
             $response = 0;
+            if(!is_numeric($this->_complement)){
+                throw new Exception(104);
+            }
             switch($this->_method){
                 case 'GET':
                     $response = ProjectModel::readProject($this->_complement);
@@ -33,6 +36,10 @@ class ProjectController extends EndpointController{
                     $this->generatePIN();
                     $this->makeUpdate();
                     $response = ProjectModel::createProject($this->_data);
+                    break;
+                case 'PUT':
+                    $this->validateFields();
+                    $response = ProjectModel::updateProject($this->_complement,$this->_data);
                     break;
                 default:
                     $response = 104;

@@ -21,11 +21,37 @@ class ProjectModel{
     }
 
     //PUT
-    static public function updateProject($id,$data){
-
+    static public function updateProject($id,$dataIn){
+        $data = $dataIn;
+        $data['proj_id'] = $id;
+        if(self::idExist($data)){
+            $query = "UPDATE projects SET ";
+            $dataAO = new ArrayObject($data);
+            $iter = $dataAO->getIterator();
+            while($iter->valid()){
+                $query .= $iter->key()."=:".$iter->key();
+                $iter->next();
+                if($iter->valid()){
+                    $query .= ",";
+                }
+                else{
+                    $query .= " WHERE proj_id =:proj_id";
+                }
+            }
+            return self::executeQuery($query,302,$data);
+        }
+        return 319;
     }
 
+    //DELETE
+
     //Extras
+    static private function idExist($data){
+        $query = "SELECT proj_id FROM projects WHERE proj_id=:proj_id";
+        $count = self::executeQuery($query,1,$data)[1]->rowCount();
+        return ($count>0)?1:0;
+    }
+
     static public function projectExist($data){
         $query = "SELECT proj_id FROM projects WHERE proj_producer=:proj_producer AND proj_tittle=:proj_tittle";
         $count = self::executeQuery($query,1,$data)[1]->rowCount();

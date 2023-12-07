@@ -103,9 +103,14 @@ class ResponseController{
             case 301://Get Projects
                 self::setResult(self::$_extra);
                 break;
+            case 302:
+                self::setInfo('Proyecto actualizado');
+                break;
             case 309:
                 self::setError('Este proyecto ya existe en la productora');
                 break;
+            case 319:
+                self::setError('El proyecto no existe');
             case 320:
                 self::setError('Campos no reconocidos en la data de projects');
                 break;
@@ -121,13 +126,16 @@ class ResponseController{
                 self::setInfo('Inicio de sesion','OK');
                 self::$_response['credentials'] = self::$_extra;
                 break;
+            case 600:
             case 604:
-            case 621:
-            case 622:
-                self::$_cod = 604;
                 self::setError('ERROR EN CREDENCIALES');
                 self::$_response['credentials'] = null;
                 self::$_response['header'] = "HTTP/1.1 400 FAIL";
+                break;
+            case 621:
+            case 622:
+                self::$_cod = 604;
+                self::response(self::$_cod);
                 break;
             case 620:
                 self::setError('Campos no reconocidos para el inicio de sesion');
