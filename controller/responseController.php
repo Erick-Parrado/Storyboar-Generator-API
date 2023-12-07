@@ -88,9 +88,8 @@ class ResponseController{
                 ));
                 break;
             case 229:
-                self::setError('El enpoint de users requiere todos los campos',
+                self::setError('Para la creacion de usuarios requiere todos los campos',
                     array(
-                        'user_id',
                         'user_name',
                         'user_lastName',
                         'user_email',
@@ -98,9 +97,25 @@ class ResponseController{
                         'user_phone'
                 ));
                 break;
-            case 299:
-            case 699:
-                self::setError('Data no ha sido proveída');
+            case 300: //Post Projects
+                self::setInfo('Proyecto creado');
+                break;
+            case 301://Get Projects
+                self::setResult(self::$_extra);
+                break;
+            case 309:
+                self::setError('Este proyecto ya existe en la productora');
+                break;
+            case 320:
+                self::setError('Campos no reconocidos en la data de projects');
+                break;
+            case 329:
+                self::setError('Para crear un project requiere todos los campos',
+                    array( 
+                        "proj_tittle",
+                        "proj_producer",
+                        "proj_description"
+                ));
                 break;
             case 600:
                 self::setInfo('Inicio de sesion','OK');
@@ -114,14 +129,18 @@ class ResponseController{
                 self::$_response['credentials'] = null;
                 self::$_response['header'] = "HTTP/1.1 400 FAIL";
                 break;
+            case 620:
+                self::setError('Campos no reconocidos para el inicio de sesion');
+                break;
             case 629:
                 self::setError('Para inicio de sesion se requiere:',array(
                     'user_email',
                     'user_pass'
                 ));
                 break;
-            case 620:
-                self::setError('Campos no reconocidos para el inicio de sesion');
+            case 299:
+            case 699:
+                self::setError('Data no ha sido proveída');
                 break;
             case 900:
                 self::setInfo('Conexión realizada');
@@ -137,7 +156,7 @@ class ResponseController{
                 self::setInfo('Error en sentencia SQL',self::$_extra);
                 break;
             default:
-                self::setError('Mensaje no identificado',self::$_extra);
+                self::setError('Mensaje no identificado :v',self::$_extra);
         }
         echo json_encode(self::$_response,JSON_UNESCAPED_UNICODE);
     }

@@ -5,15 +5,54 @@ require_once 'controller/endpointController.php';
 class ProjectController extends EndpointController{
     function __construct($method, $complement=null, $data=null,$add=null){
         $fields = array(       
-            "user_email"=>"/^([a-zA-Z0-9_.]{8,})@([a-z]{5,})\.([a-z]{2,3})(\.[a-z]{2,3})?$/",
-            "user_pass"=>"/^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*[0-9]+)(?=.*[!@#$%^&*(){}\\[\\]]+)[a-zA-Z0-9!@#$%^&*(){}\\[\\]]{8,}$/",
+            "proj_id",
+            "proj_tittle",
+            "proj_producer",
+            "proj_description",
+            "proj_dateUpdate",
+            "proj_pin"
         );
-        var_dump($fields);
-        parent::__construct(600,$method,$complement,$data,$add,$fields);    
+        parent::__construct(300,$method,$complement,$data,$add,$fields);    
     }
 
     public function index(){
-        echo ':v';
+        try{
+            $response = 0;
+            switch($this->_method){
+                case 'GET':
+                    $response = ProjectModel::readProject($this->_complement);
+                    break;
+                case 'POST':
+                    $strictFields= array(
+                        "proj_tittle",
+                        "proj_producer",
+                        "proj_description"
+                    );
+                    $this->setStrict($strictFields);
+                    $this->strictFields();
+                    $this->generatePIN();
+                    $this->makeUpdate();
+                    $response = ProjectModel::createProject($this->_data);
+                    break;
+                default:
+                    $response = 104;
+            }
+            ResponseController::response($response);
+        }catch(Exception $e){
+            ResponseController::response($e->getMessage());
+        }
+    }
+
+    private function generatePIN(){
+        do{
+            $pin = strtoupper(bin2hex(random_bytes(4)));
+        }while(ProjectModel::pinExist($pin));
+        
+        $this->_data['proj_pin'] = $pin;
+    }
+
+    private function makeUpdate(){
+        $this->_data['proj_dateUpdate'] = date('d/m/Y', time());
     }
 }
 ?>
