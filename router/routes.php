@@ -1,6 +1,7 @@
 <?php
 require_once 'controller/userController.php';
 require_once 'controller/loginController.php';
+require_once 'controller/projectController.php';
 
 $routesArray = array_filter(explode("/",$_SERVER['REQUEST_URI']));
 
@@ -30,7 +31,7 @@ if ($routesArray[3] == ''){
             $petition = new UserController($method,$complement,$_POST,$add);
             break;
         case 'projects':
-            echo 'Projects';
+            $petition = new ProjectController($method,$complement,$_POST,$add);
             break;
         case 'scenes':
             echo 'Scenes';
@@ -46,13 +47,6 @@ if ($routesArray[3] == ''){
     
         case 'login':
             $petition = new loginController($method,$complement,$_POST);
-            /*if(isset($_POST) && $method=='POST'){
-                $user = new LoginController($method, $_POST);
-                $user -> index();
-            }else{
-                ResponseController::response(104);
-                return;
-            }*/
             break;
         default:
             ResponseController::response(104);

@@ -1,6 +1,5 @@
 <?php
 require_once 'model/userModel.php';
-require_once 'controller/endpointController.php';
 
 class loginController extends EndpointController{
     function __construct($method, $complement=null, $data=null,$add=null){
