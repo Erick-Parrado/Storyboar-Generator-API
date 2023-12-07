@@ -109,6 +109,9 @@ class ResponseController{
             case 303:
                 self::setInfo('Proyecto eliminado');
                 break;
+            case 304:
+                self::setInfo('PIN actualizado');
+                break;
             case 309:
                 self::setError('Este proyecto ya existe en la productora');
                 break;

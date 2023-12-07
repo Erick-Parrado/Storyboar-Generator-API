@@ -5,14 +5,16 @@ require_once 'controller/endpointController.php';
 class ProjectController extends EndpointController{
     function __construct($method, $complement=null, $data=null,$add=null){
         $fields = array(       
-            "proj_id",
-            "proj_tittle",
-            "proj_producer",
-            "proj_description",
-            "proj_dateUpdate",
-            "proj_pin"
+            "scen_id",
+            "scen_number",
+            "scen_duration",
+            "scen_place",
+            "scen_argument",
+            "dayT_id",
+            "spac_id",
+            "proj_id"
         );
-        parent::__construct(300,$method,$complement,$data,$add,$fields);    
+        parent::__construct(400,$method,$complement,$data,$add,$fields);    
     }
 
     public function index(){
@@ -33,6 +35,8 @@ class ProjectController extends EndpointController{
                     );
                     $this->setStrict($strictFields);
                     $this->strictFields();
+                    $this->generatePIN();
+                    $this->makeUpdate();
                     $response = ProjectModel::createProject($this->_data);
                     break;
                 case 'PUT':
@@ -42,14 +46,6 @@ class ProjectController extends EndpointController{
                 case 'DELETE':
                     $response = ProjectModel::deleteProject($this->_complement);
                     break;
-                case 'PATCH':
-                    if($this->_add=='PIN'){
-                        $response = ProjectModel::generatePIN($this->_complement);
-                    }
-                    else{
-                        $response = 104;
-                    }
-                    break;
                 default:
                     $response = 104;
             }
@@ -58,6 +54,5 @@ class ProjectController extends EndpointController{
             ResponseController::response($e->getMessage());
         }
     }
-
 }
 ?>

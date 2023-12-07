@@ -3,6 +3,8 @@ class ProjectModel{
     //POST
     static public function createProject($data){
         if(!self::projectExist($data)){
+            $data['proj_pin'] = self::generatePIN();
+            $data['proj_dateUpdate'] = self::makeUpdate();
             $query = 'INSERT INTO projects(proj_tittle,proj_producer,proj_description,proj_pin,proj_dateUpdate) VALUES (:proj_tittle,:proj_producer,:proj_description,:proj_pin,:proj_dateUpdate)';
             return self::executeQuery($query,300,$data);
         }
@@ -92,6 +94,29 @@ class ProjectModel{
             return $project;
         }
         return false;
+    }
+
+    static public function generatePIN($proj_id = null){
+        do{
+            $pin = strtoupper(bin2hex(random_bytes(4)));
+        }while(ProjectModel::pinExist($pin));
+        
+        $data['proj_pin'] = $pin;
+        if($proj_id==null){
+            return $data['proj_pin'];
+        }
+        $result = self::updateProject($proj_id,$data);
+        if($result == 302) return 304;
+        return $result;
+    }
+    static public function makeUpdate($proj_id = null){
+        $data['proj_dateUpdate'] = date('d/m/Y', time());
+        if($proj_id==null){
+            return $data['proj_dateUpdate'];
+        }
+        $result = self::updateProject($proj_id,$data);
+        if($result == 302) return 304;
+        return $result;
     }
 
     //Ejecutor de queries
