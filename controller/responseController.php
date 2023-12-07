@@ -99,6 +99,7 @@ class ResponseController{
                 ));
                 break;
             case 299:
+            case 699:
                 self::setError('Data no ha sido proveída');
                 break;
             case 600:
@@ -106,9 +107,21 @@ class ResponseController{
                 self::$_response['credentials'] = self::$_extra;
                 break;
             case 604:
+            case 621:
+            case 622:
+                self::$_cod = 604;
                 self::setError('ERROR EN CREDENCIALES');
                 self::$_response['credentials'] = null;
                 self::$_response['header'] = "HTTP/1.1 400 FAIL";
+                break;
+            case 629:
+                self::setError('Para inicio de sesion se requiere:',array(
+                    'user_email',
+                    'user_pass'
+                ));
+                break;
+            case 620:
+                self::setError('Campos no reconocidos para el inicio de sesion');
                 break;
             case 900:
                 self::setInfo('Conexión realizada');
@@ -125,18 +138,6 @@ class ResponseController{
                 break;
             default:
                 self::setError('Mensaje no identificado',self::$_extra);
-            /*
-            case 503://Error de credenciales
-                self::setError('ERROR EN CREDENCIALES');
-                self::$_response['credentials'] = null;
-                self::$_response['header'] = "HTTP/1.1 400 FAIL";
-                break;
-            case 504://No credentials
-                self::setError('NO TIENE CREDENCIALES');
-                break;
-            case 505:
-                self::setError('NO TIENE ACCESO');
-                break;*/
         }
         echo json_encode(self::$_response,JSON_UNESCAPED_UNICODE);
     }

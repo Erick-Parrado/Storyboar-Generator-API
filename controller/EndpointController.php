@@ -35,7 +35,7 @@ class EndpointController{
     }
     
     protected function validateValues(){
-        $this->validateFields();
+        $this->strictFields();
         if(is_array($this->_data)){
             $dataAO = new ArrayObject($this->_data);
             $iter = $dataAO -> getIterator();
@@ -60,19 +60,20 @@ class EndpointController{
     }
 
     protected function strictFields(){
-        $this->validateValues();
         if($this->_strictFields != null){
-            $this->validateFields();
-            $fieldsAO = new ArrayObject($this->_strictFields);
-            $iter = $fieldsAO -> getIterator();
-            while($iter->valid()){
-                if(!array_key_exists($iter->current(),$this->_data)){
-                    throw new Exception($this->_codBase+29);
-                }
-                $iter->next();
-            }
         }
-        return false;
+        else{
+            $this->_strictFields = array_keys($this->_fields);
+        }
+        $this->validateFields();
+        $fieldsAO = new ArrayObject($this->_strictFields);
+        $iter = $fieldsAO -> getIterator();
+        while($iter->valid()){
+            if(!array_key_exists($iter->current(),$this->_data)){
+                throw new Exception($this->_codBase+29);
+            }
+            $iter->next();
+        }
     }
 }
 ?>
