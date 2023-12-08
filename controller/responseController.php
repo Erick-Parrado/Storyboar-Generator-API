@@ -139,6 +139,9 @@ class ResponseController{
             case 420:
                 self::setError('Campos no reconocidos en la data de scenes');
                 break;
+            case 421:
+                self::setError('scen_number no es valido');
+                break;
             case 428:
                 self::setError('Se requiere proj_id');
                 break;

@@ -5,9 +5,14 @@ require_once 'model/projectModel.php';
 class SceneModel{
     //POST
     static public function createScene($data){
-        
-        $query = 'INSERT INTO scenes(scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id) VALUES (:scen_number,:scen_duration,:scen_place,:dayT_id,:spac_id,:scen_argument,:proj_id)';
-        //return self::executeQuery($query,400,$data);
+        if(array_key_exists('scen_number',$data)){
+            //echo json_encode($data,JSON_UNESCAPED_UNICODE);
+            if(!self::validNumberScene($data)) return 421;
+        } 
+        self::newNumberScene($data); 
+        //echo json_encode($data,JSON_UNESCAPED_UNICODE);
+        $query = 'INSERT INTO `scenes`(`scen_number`, `scen_duration`, `scen_place`, `dayT_id`, `spac_id`, `scen_argument`, `proj_id`) VALUES  (:scen_number,:scen_duration,:scen_place,:dayT_id,:spac_id,:scen_argument,:proj_id)';
+        return self::executeQuery($query,400,$data);
     }
 
     //GET
@@ -24,17 +29,78 @@ class SceneModel{
     static public function readProjectScenes($proj_id = null){
         if($proj_id == null) return 428;
         $data['proj_id'] = $proj_id;
-        $query = 'SELECT scen_id,scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes WHERE proj_id =:proj_id';
+        $query = 'SELECT scen_id,scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes WHERE proj_id =:proj_id ORDER BY scen_number ASC';
         return self::executeQuery($query,402,$data);
     }
 
+    //PUT
+    static public function updateScene($data){
+        if(!array_key_exists('scen_number',$data)){
+            if(!self::validNumberScene($data)) return 421;
+        } 
+
+        return 319;
+
+    }
     
 
     //Extras
-    static public function setNumber($data){
+    static public function exist($data){
+        //echo json_encode($data,JSON_UNESCAPED_SLASHES);
+        if(array_key_exists('scen_id',$data)){
+            $query = "SELECT scen_id FROM scenes WHERE scen_id = :scen_id";
+        }
+        else{
+            $query = "SELECT scen_id FROM scenes WHERE proj_id=:proj_id AND scen_number = :scen_number";
+        }
+        $scen_id = self::executeQuery($query,1,$data,true)[1][0]['scen_id'];
+        return ($scen_id>0)?$scen_id:0;
+    }
+
+    static private function validNumberScene($data){
         $scenCount = (self::readProjectScenes($data['proj_id'])[1]->rowCount());
-        if($data['scen_number']<$scenCount){
-            
+        return ($data['scen_number']<=$scenCount+1)?1:0;
+    }
+
+    static public function newNumberScene($data){
+        $scenCount = (self::readProjectScenes($data['proj_id'])[1]->rowCount());
+        if($data['scen_number']<=$scenCount){
+            $query = 'SELECT scen_id,scen_number,proj_id FROM scenes WHERE scen_number>=:scen_number AND proj_id = :proj_id  ORDER BY scen_number ASC';
+            //echo json_encode($data,JSON_UNESCAPED_SLASHES);
+            $changeScenes = self::executeQuery($query,1,$data)[1]->fetchAll(PDO::FETCH_ASSOC);
+            //echo json_encode($changeScenes,JSON_UNESCAPED_UNICODE);
+            foreach($changeScenes as $scene){
+                $scene['scen_number']++;
+                //echo json_encode($scene,JSON_UNESCAPED_SLASHES);
+                self::updateMethod($scene);
+            }
+        }
+    }
+
+    
+    static private function updateMethod($data) {
+        $scen_id = self::exist($data);
+        $data['scen_id'] = $scen_id;
+        if($scen_id!=0){
+            ProjectModel::makeUpdate($data['proj_id']);
+            $query = "UPDATE scenes SET ";
+            $dataAO = new ArrayObject($data);
+            $iter = $dataAO->getIterator();
+            while($iter->valid()){
+                if(is_numeric($iter->key())){ 
+                    $iter->next();
+                    continue;
+                }
+                $query .= $iter->key()."=:".$iter->key();
+                $iter->next();
+                if($iter->valid()){
+                    $query .= ",";
+                }
+                else{
+                    $query .= " WHERE scen_id =:scen_id";
+                }
+            }
+            return self::executeQuery($query,302,$data);
         }
     }
 
