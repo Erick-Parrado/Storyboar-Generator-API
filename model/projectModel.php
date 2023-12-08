@@ -27,6 +27,7 @@ class ProjectModel{
         $data = $dataIn;
         $data['proj_id'] = $id;
         if(self::idExist($data)){
+            $data['proj_dateUpdate'] = self::makeUpdate();
             $query = "UPDATE projects SET ";
             $dataAO = new ArrayObject($data);
             $iter = $dataAO->getIterator();
@@ -109,6 +110,7 @@ class ProjectModel{
         if($result == 302) return 304;
         return $result;
     }
+
     static public function makeUpdate($proj_id = null){
         $data['proj_dateUpdate'] = date('d/m/Y', time());
         if($proj_id==null){
