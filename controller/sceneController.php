@@ -1,8 +1,8 @@
 <?php
+require_once 'model/dayTimesModel.php';
 require_once 'model/sceneModel.php';
 require_once 'model/projectModel.php';
 require_once 'controller/endpointController.php';
-require_once 'model/dayTimesModel.php';
 require_once 'model/spacesModel.php';
 
 class SceneController extends EndpointController{
@@ -25,6 +25,7 @@ class SceneController extends EndpointController{
             $response = 0;
             switch($this->_method){
                 case 'GET':
+                    $this->needAdd();
                     switch($this->_add){
                         case 'project':
                             $response = SceneModel::readProjectScenes($this->_complement);
@@ -35,13 +36,10 @@ class SceneController extends EndpointController{
                         case 'spaces':
                             $response = SpacesModel::readSpaces($this->_complement);
                             break;
-                        case null:
-                            $this->optionalComplement();
-                            $response = SceneModel::readScene($this->_complement);
-                            break;
                         default:
-                            throw new Exception(104);
-                        
+                            if(!is_numeric($this->_add))throw new Exception(104);
+                            $response = SceneModel::readScene($this->_complement,$this->_add);
+                            break;
                     }
                     break;
                 case 'POST':

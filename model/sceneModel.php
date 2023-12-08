@@ -1,28 +1,17 @@
 <?php
 
 require_once 'model/projectModel.php';
+require_once 'model/spacesModel.php';
+require_once 'model/dayTimesModel.php';
 
 class SceneModel{
-    //POST
-    static public function createScene($data){
-        if(array_key_exists('scen_number',$data)){
-            //echo json_encode($data,JSON_UNESCAPED_UNICODE);
-            if(!self::validNumberScene($data)) return 421;
-        } 
-        self::newNumberScene($data); 
-        //echo json_encode($data,JSON_UNESCAPED_UNICODE);
-        $query = 'INSERT INTO `scenes`(`scen_number`, `scen_duration`, `scen_place`, `dayT_id`, `spac_id`, `scen_argument`, `proj_id`) VALUES  (:scen_number,:scen_duration,:scen_place,:dayT_id,:spac_id,:scen_argument,:proj_id)';
-        return self::executeQuery($query,400,$data);
-    }
 
     //GET
-    static public function readScene($scen_id=null){
-        $data = [];
-        $query = 'SELECT scen_id,scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes';
-        if($scen_id > 0 && $scen_id != null){
-            $data['scen_id'] = $scen_id;
-            $query .= ' WHERE scen_id =:scen_id';
-        }
+    static public function readScene($scen_number,$proj_id){
+        $data['scen_number'] = $scen_number;
+        $data['proj_id'] = $proj_id;
+        $data['scen_id']= self::exist($data);
+        $query = 'SELECT scen_id,scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes WHERE scen_id =:scen_id';
         return self::executeQuery($query,301,$data);
     }
     
@@ -31,6 +20,21 @@ class SceneModel{
         $data['proj_id'] = $proj_id;
         $query = 'SELECT scen_id,scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes WHERE proj_id =:proj_id ORDER BY scen_number ASC';
         return self::executeQuery($query,402,$data);
+    }
+
+    //POST
+    static public function createScene($data){
+        if(!UserModel::exist($data)){
+            return 219;
+        }
+        if(array_key_exists('scen_number',$data)){
+            //echo json_encode($data,JSON_UNESCAPED_UNICODE);
+            if(!self::validNumberScene($data)) return 421;
+        } 
+        self::newNumberScene($data); 
+        //echo json_encode($data,JSON_UNESCAPED_UNICODE);
+        $query = 'INSERT INTO `scenes`(`scen_number`, `scen_duration`, `scen_place`, `dayT_id`, `spac_id`, `scen_argument`, `proj_id`) VALUES  (:scen_number,:scen_duration,:scen_place,:dayT_id,:spac_id,:scen_argument,:proj_id)';
+        return self::executeQuery($query,400,$data);
     }
 
     //PUT
@@ -53,6 +57,7 @@ class SceneModel{
     //Extras
     static public function exist($data){
         //echo json_encode($data,JSON_UNESCAPED_SLASHES);
+        $query = '';
         if(array_key_exists('scen_id',$data)){
             $query = "SELECT scen_id FROM scenes WHERE scen_id = :scen_id";
         }
