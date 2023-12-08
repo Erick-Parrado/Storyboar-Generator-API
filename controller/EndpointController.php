@@ -17,7 +17,24 @@ class EndpointController{
         $this->_codBase = $codBase;
         $this->_strictFields = null;
     }
+    
+    //Petition validation
+    protected function needNone(){
+        if($this->_complement != 0 || $this->_add != null) throw new Exception(104);
+    }
+    protected function optionalComplement(){
+        if(!is_numeric($this->_complement) || $this->_add != null) throw new Exception(104);
+    }
 
+    protected function needComplement(){
+        if((!is_numeric($this->_complement) && $this->_complement<=0) || $this->_add != null) throw new Exception(104);
+    }
+
+    protected function needAdd(){
+        if(!is_numeric($this->_complement) && $this->_add == null) throw new Exception(104);
+    }
+
+    //Data validation
     protected function dataExist(){
         if($this->_data == null) throw new Exception($this->_codBase+99);
     }

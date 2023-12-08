@@ -1,8 +1,41 @@
 <?php
+
+require_once 'model/projectModel.php';
+
 class SceneModel{
-    //
+    //POST
     static public function createScene($data){
         
+        $query = 'INSERT INTO scenes(scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id) VALUES (:scen_number,:scen_duration,:scen_place,:dayT_id,:spac_id,:scen_argument,:proj_id)';
+        //return self::executeQuery($query,400,$data);
+    }
+
+    //GET
+    static public function readScene($scen_id=null){
+        $data = [];
+        $query = 'SELECT scen_id,scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes';
+        if($scen_id > 0 && $scen_id != null){
+            $data['scen_id'] = $scen_id;
+            $query .= ' WHERE scen_id =:scen_id';
+        }
+        return self::executeQuery($query,301,$data);
+    }
+    
+    static public function readProjectScenes($proj_id = null){
+        if($proj_id == null) return 428;
+        $data['proj_id'] = $proj_id;
+        $query = 'SELECT scen_id,scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes WHERE proj_id =:proj_id';
+        return self::executeQuery($query,402,$data);
+    }
+
+    
+
+    //Extras
+    static public function setNumber($data){
+        $scenCount = (self::readProjectScenes($data['proj_id'])[1]->rowCount());
+        if($data['scen_number']<$scenCount){
+            
+        }
     }
 
     static public function  executeQuery($query,$confirmCod = 0,$data=null,$fetch=false){
@@ -13,7 +46,8 @@ class SceneModel{
             "scen_place",
             "scen_argument",
             "dayT_id",
-            "spac_id");
+            "spac_id",
+            "proj_id");
         $statement= Connection::doConnection()->prepare($query);
         if(isset($data)){
             foreach(array_keys($fields) as $index){
@@ -41,6 +75,9 @@ class SceneModel{
                         break;
                     case 6:
                         $statement->bindParam(":spac_id", $data["spac_id"],PDO::PARAM_INT);
+                        break;
+                    case 7:
+                        $statement->bindParam(":proj_id", $data["proj_id"],PDO::PARAM_INT);
                         break;
                 }
             }

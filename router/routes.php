@@ -3,6 +3,7 @@ require_once 'controller/userController.php';
 require_once 'controller/loginController.php';
 require_once 'controller/projectController.php';
 require_once 'controller/teamController.php';
+require_once 'controller/sceneController.php';
 
 $routesArray = array_filter(explode("/",$_SERVER['REQUEST_URI']));
 
@@ -34,7 +35,7 @@ if ($routesArray[3] == ''){
             $petition = new ProjectController($method,$complement,$_POST,$add);
             break;
         case 'scenes':
-            echo 'Scenes';
+            $petition = new SceneController($method,$complement,$_POST,$add);
             break;
             
         case 'planes':

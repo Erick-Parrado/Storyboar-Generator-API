@@ -12,7 +12,8 @@ class SceneController extends EndpointController{
             "scen_place",
             "scen_argument",
             "dayT_id",
-            "spac_id"
+            "spac_id",
+            "proj_id"
         );
         parent::__construct(400,$method,$complement,$data,$add,$fields);    
     }
@@ -20,13 +21,34 @@ class SceneController extends EndpointController{
     public function index(){
         try{
             $response = 0;
-            if(!is_numeric($this->_complement)){
-                throw new Exception(104);
-            }
             switch($this->_method){
                 case 'GET':
+                    switch($this->_add){
+                        case 'project':
+                            $response = SceneModel::readProjectScenes($this->_complement);
+                            break;
+                        case null:
+                            $this->optionalComplement();
+                            $response = SceneModel::readScene($this->_complement);
+                            break;
+                        default:
+                            throw new Exception(104);
+                        
+                    }
                     break;
                 case 'POST':
+                    $this->needNone();
+                    $strictFields = array(
+                        'scen_number',
+                        'scen_duration',
+                        'scen_place',
+                        'dayT_id',
+                        'spac_id',
+                        'scen_argument',
+                        'proj_id'
+                    );
+                    $this->setStrict($strictFields);
+                    $this->strictFields();
                     $response = SceneModel::createScene($this->_data);
                     break;
                 case 'PUT':

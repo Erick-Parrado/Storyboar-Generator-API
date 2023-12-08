@@ -129,6 +129,31 @@ class ResponseController{
                         "proj_description"
                 ));
                 break;
+            case 400:
+                self::setInfo('Escena creada');
+                break;
+            case 401:
+            case 402:
+                self::setResult(self::$_extra);
+                break;
+            case 420:
+                self::setError('Campos no reconocidos en la data de scenes');
+                break;
+            case 428:
+                self::setError('Se requiere proj_id');
+                break;
+            case 429:
+                self::setError('Para crear usa scene requiere todos los campos',
+                    array( 
+                        'scen_number',
+                        'scen_duration',
+                        'scen_place',
+                        'dayT_id',
+                        'spac_id',
+                        'scen_argument',
+                        'proj_id'
+                ));
+                break;
             case 600:
                 self::setInfo('Inicio de sesion','OK');
                 self::$_response['credentials'] = self::$_extra;
@@ -152,17 +177,12 @@ class ResponseController{
                     'user_pass'
                 ));
                 break;
-            case 299:
-            case 699:
-                self::setError('Data no ha sido proveída');
-                break;
             case 700://Ingreso 
                 self::setInfo('Se ingreso exitosamente'); 
                 break; 
             case 701://Get Users in Teams
+            case 702:
                 self::setResult(self::$_extra);
-                break;
-            case 702://Get Projects
                 self::setResult(self::$_extra);
                 break;
             case 703://Put Team in Teams
@@ -197,6 +217,14 @@ class ResponseController{
                 break;
             case 759:
                 self::setError('Rol no existe');
+                break;
+            case 299:
+            case 399:
+            case 499:
+            case 599:
+            case 699:
+            case 799:
+                self::setError('Data no ha sido proveída');
                 break;
             case 900:
                 self::setInfo('Conexión realizada');

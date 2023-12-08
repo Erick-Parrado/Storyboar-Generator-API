@@ -12,11 +12,11 @@ class ProjectModel{
     }
     
     //GET
-    static public function readProject($id=null){
+    static public function readProject($proj_id=null){
         $data = [];
         $query = 'SELECT proj_id,proj_tittle,proj_producer,proj_description,proj_dateUpdate FROM projects';
-        if($id > 0 && $id != null){
-            $data['proj_id'] = $id;
+        if($proj_id > 0 && $proj_id != null){
+            $data['proj_id'] = $proj_id;
             $query .= ' WHERE proj_id =:proj_id';
         }
         return self::executeQuery($query,301,$data);
