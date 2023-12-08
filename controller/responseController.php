@@ -136,6 +136,9 @@ class ResponseController{
             case 402:
                 self::setResult(self::$_extra);
                 break;
+            case 419:
+                self::setError('Escena no existe');
+                break;
             case 420:
                 self::setError('Campos no reconocidos en la data de scenes');
                 break;

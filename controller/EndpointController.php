@@ -31,7 +31,7 @@ class EndpointController{
     }
 
     protected function needAdd(){
-        if(!is_numeric($this->_complement) && $this->_add == null) throw new Exception(104);
+        if((!is_numeric($this->_complement) || $this->_complement == 0) && $this->_add == null) throw new Exception(104);
     }
 
     //Data validation

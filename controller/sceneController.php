@@ -52,6 +52,9 @@ class SceneController extends EndpointController{
                     $response = SceneModel::createScene($this->_data);
                     break;
                 case 'PUT':
+                    $this->needAdd();
+                    $this->validateFields();
+                    $response = SceneModel::updateScene($this->_complement,$this->_add,$this->_data);
                     break;
                 case 'DELETE':
                     break;
@@ -62,7 +65,7 @@ class SceneController extends EndpointController{
             }
             ResponseController::response($response);
         }catch(Exception $e){
-            ResponseController::response($e->getMessage());
+            ResponseController::response((int)$e->getMessage());
         }
     }
 
