@@ -1,57 +1,59 @@
 <?php
-require_once 'model/projectModel.php';
-require_once 'controller/endpointController.php';
-
-class ProjectController extends EndpointController{
-    function __construct($method, $complement=null, $data=null,$add=null){
-        $fields = array(       
-            "scen_id",
-            "scen_number",
-            "scen_duration",
-            "scen_place",
-            "scen_argument",
-            "dayT_id",
-            "spac_id",
-            "proj_id"
-        );
-        parent::__construct(400,$method,$complement,$data,$add,$fields);    
+class SpacesModel{
+    static public function readSpaces($spac_id){
+        $data= [];
+        $query = 'SELECT * FROM spaces';
+        if($spac_id > 0 && $spac_id != null){
+            $data['spac_id'] = $spac_id;
+            $query .= ' WHERE spac_id =:spac_id';
+        }
+        return self::executeQuery($query,751,$data);
     }
 
-    public function index(){
-        try{
-            $response = 0;
-            if(!is_numeric($this->_complement)){
-                throw new Exception(104);
+    static public function exist($data){
+        $query = "SELECT spac_id FROM spaces WHERE spac_id=:spac_id";
+        $count = self::executeQuery($query,1,$data)[1]->rowCount();
+        return ($count>0)?1:0;
+    }
+
+    static public function executeQuery($query,$confirmCod = 0,$data=null,$fetch=false){
+        $fields = array(
+            'spac_id',
+            'spac_name',
+            'spac_abr'
+        );
+        $statement= Connection::doConnection()->prepare($query);
+        if(isset($data)){
+            foreach(array_keys($fields) as $index){
+                $pattern = '/^.*:'.$fields[$index].'.*$/';
+                $result = (preg_match($pattern,$query));
+                if(!$result) continue;
+                switch($index){
+                    case 0:
+                        $statement->bindParam(":spac_id", $data["spac_id"],PDO::PARAM_INT);
+                        break;
+                    case 1:
+                        $statement->bindParam(":spac_name", $data["spac_name"],PDO::PARAM_STR);
+                        break;
+                    case 1:
+                        $statement->bindParam(":spac_abr", $data["spac_standard"],PDO::PARAM_STR);
+                        break;
+                }
             }
-            switch($this->_method){
-                case 'GET':
-                    $response = ProjectModel::readProject($this->_complement);
-                    break;
-                case 'POST':
-                    $strictFields= array(
-                        "proj_tittle",
-                        "proj_producer",
-                        "proj_description"
-                    );
-                    $this->setStrict($strictFields);
-                    $this->strictFields();
-                    $this->generatePIN();
-                    $this->makeUpdate();
-                    $response = ProjectModel::createProject($this->_data);
-                    break;
-                case 'PUT':
-                    $this->validateFields();
-                    $response = ProjectModel::updateProject($this->_complement,$this->_data);
-                    break;
-                case 'DELETE':
-                    $response = ProjectModel::deleteProject($this->_complement);
-                    break;
-                default:
-                    $response = 104;
-            }
-            ResponseController::response($response);
-        }catch(Exception $e){
-            ResponseController::response($e->getMessage());
+        }
+
+        if(preg_match('/^SELECT.*$/',$query)){
+            $error = $statement->execute() ? false : Connection::doConnection()->errorInfo();
+            if($error != false) return array(910,$error->getMessage());
+            if($fetch) return array($confirmCod,$statement->fetchAll());
+            return array($confirmCod,$statement);
+        }
+        else{
+            $error = $statement->execute() ? false : Connection::doConnection()->errorInfo();
+            $statement-> closeCursor();
+            $statement = null;
+            if($error != false) return array(910,$error->getMessage());
+            else return $confirmCod;
         }
     }
 }

@@ -26,7 +26,7 @@ class ProjectModel{
     static public function updateProject($id,$dataIn){
         $data = $dataIn;
         $data['proj_id'] = $id;
-        if(self::idExist($data)){
+        if(self::exist($data)){
             $data['proj_dateUpdate'] = self::makeUpdate();
             $query = "UPDATE projects SET ";
             $dataAO = new ArrayObject($data);
@@ -49,14 +49,14 @@ class ProjectModel{
     //DELETE
     static public function deleteProject($id){
         $data['proj_id'] = $id;
-        if(self::idExist($data)){
+        if(self::exist($data)){
             $query = "DELETE FROM projects WHERE proj_id = :proj_id";
             return self::executeQuery($query,303,$data);
         }
         return 319;
     }
     //Extras
-    static public function idExist($data){
+    static public function exist($data){
         $query = "SELECT proj_id FROM projects WHERE proj_id=:proj_id";
         $count = self::executeQuery($query,1,$data)[1]->rowCount();
         return ($count>0)?1:0;

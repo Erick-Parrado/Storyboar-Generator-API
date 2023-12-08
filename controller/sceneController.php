@@ -2,6 +2,8 @@
 require_once 'model/sceneModel.php';
 require_once 'model/projectModel.php';
 require_once 'controller/endpointController.php';
+require_once 'model/dayTimesModel.php';
+require_once 'model/spacesModel.php';
 
 class SceneController extends EndpointController{
     function __construct($method, $complement=null, $data=null,$add=null){
@@ -26,6 +28,12 @@ class SceneController extends EndpointController{
                     switch($this->_add){
                         case 'project':
                             $response = SceneModel::readProjectScenes($this->_complement);
+                            break;
+                        case 'daytimes':
+                            $response = DayTimesModel::readDayTimes($this->_complement);
+                            break;
+                        case 'spaces':
+                            $response = SpacesModel::readSpaces($this->_complement);
                             break;
                         case null:
                             $this->optionalComplement();

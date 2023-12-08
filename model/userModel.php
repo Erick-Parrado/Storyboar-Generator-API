@@ -22,7 +22,7 @@ class UserModel{
     static public function updateUser($id,$dataIn){
         $data = $dataIn;
         $data['user_id']=$id;
-        if(self::idExist($data)){
+        if(self::exist($data)){
             if(array_key_exists('user_email',$data)){
                 if(self::emailExist($data)){
                     return 209;
@@ -49,7 +49,7 @@ class UserModel{
     //DELETE
     static public function deleteUser($id){
         $data['user_id']=$id;
-        if(self::idExist($data)){
+        if(self::exist($data)){
             $query = 'DELETE FROM users WHERE user_id = :user_id';
             return self::executeQuery($query,203,$data);
         }
@@ -85,7 +85,7 @@ class UserModel{
         return ($count>0)?1:0;
     }
 
-    static public function idExist($data){
+    static public function exist($data){
         $query = "SELECT user_id FROM users WHERE user_id=:user_id";
         $count = self::executeQuery($query,200,$data)[1]->rowCount();
         return ($count>0)?1:0;

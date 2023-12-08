@@ -2,7 +2,7 @@
 class RoleModel{
     static public function readRoles($role_id){
         $data= [];
-        $query = 'SELECT role_id,role_name FROM roles';
+        $query = 'SELECT * FROM roles';
         if($role_id > 0 && $role_id != null){
             $data['role_id'] = $role_id;
             $query .= ' WHERE role_id =:role_id';
@@ -10,7 +10,7 @@ class RoleModel{
         return self::executeQuery($query,751,$data);
     }
 
-    static public function idExist($data){
+    static public function exist($data){
         $query = "SELECT role_id FROM roles WHERE role_id=:role_id";
         $count = self::executeQuery($query,1,$data)[1]->rowCount();
         return ($count>0)?1:0;

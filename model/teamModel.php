@@ -7,7 +7,7 @@ class TeamModel{
     //GET
     static public function readUsers($proj_id){
         $data['proj_id'] = $proj_id;
-        if(ProjectModel::idExist($data)){
+        if(ProjectModel::exist($data)){
             $query = 'SELECT team_id,proj_id,users.user_id,users.user_name,users.user_lastName,users.user_email,users.user_phone FROM team_members INNER JOIN users ON team_members.user_id = users.user_id WHERE team_members.proj_id = :proj_id';
             return self::executeQuery($query,701,$data);
         }
@@ -16,7 +16,7 @@ class TeamModel{
     
     static public function readProjects($user_id){
         $data['user_id'] = $user_id;
-        if(UserModel::idExist($data)){
+        if(UserModel::exist($data)){
             $query = 'SELECT team_id,team_members.proj_id,proj_tittle,proj_producer,proj_description FROM team_members INNER JOIN projects ON team_members.proj_id = projects.proj_id WHERE team_members.user_id = :user_id';
             return self::executeQuery($query,702,$data);
         }
@@ -30,7 +30,7 @@ class TeamModel{
         if($pinProject == false){
             return 319;
         }
-        if(!UserModel::idExist($data)){
+        if(!UserModel::exist($data)){
             return 219;
         }
         $data['proj_id'] = $pinProject;
@@ -46,7 +46,7 @@ class TeamModel{
     static public function updateRole($data){
         $data['team_id'] = $data['proj_id'].''.$data['user_id'];
         if(!self::accessMade($data)) return 710;
-        if(!RoleModel::idExist($data)) return 759;
+        if(!RoleModel::exist($data)) return 759;
         $query = 'UPDATE team_members SET role_id =:role_id WHERE team_id = :team_id';
 
         return self::executeQuery($query,703,$data);
