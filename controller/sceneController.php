@@ -27,6 +27,7 @@ class SceneController extends EndpointController{
                 case 'GET':
                     break;
                 case 'POST':
+                    $response = SceneModel::createScene($this->_data);
                     break;
                 case 'PUT':
                     break;

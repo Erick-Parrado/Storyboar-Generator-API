@@ -1,6 +1,10 @@
 <?php
 class SceneModel{
-    
+    //
+    static public function createScene($data){
+        
+    }
+
     static public function  executeQuery($query,$confirmCod = 0,$data=null,$fetch=false){
         $fields = array(
             "scen_id",
