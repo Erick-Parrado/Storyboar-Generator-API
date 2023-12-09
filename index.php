@@ -55,7 +55,7 @@ function enterRoutes($endPoint){
             $routes -> index();
         }
         else{
-            ResponseController::response(119);
+            ResponseController::response(115);
             return;
         }
     }

@@ -1,6 +1,6 @@
 <?php
 class UserModel{
-    static public function readUser($user_id=null){
+    static public function readUser($user_id=0){
         $data = [];
         $query = 'SELECT user_id,user_name,user_lastName,user_email,user_pass,user_phone FROM users';
         if($user_id > 0 && $user_id != null){

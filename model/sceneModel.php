@@ -11,22 +11,21 @@ class SceneModel{
         $data['scen_number'] = $scen_number;
         $data['proj_id'] = $proj_id;
         $data['scen_id']= self::exist($data);
-        $query = 'SELECT scen_id,scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes WHERE scen_id =:scen_id';
+        $query = 'SELECT scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes WHERE scen_id =:scen_id';
         return self::executeQuery($query,301,$data);
     }
     
     static public function readProjectScenes($proj_id = null){
-        if($proj_id == null) return 428;
+        if($proj_id == null) throw new Exception(428);
         $data['proj_id'] = $proj_id;
-        $query = 'SELECT scen_id,scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes WHERE proj_id =:proj_id ORDER BY scen_number ASC';
+        $query = 'SELECT scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes WHERE proj_id =:proj_id ORDER BY scen_number ASC';
         return self::executeQuery($query,402,$data);
     }
 
     //POST
     static public function createScene($data){
-        if(!UserModel::exist($data)){
-            return 219;
-        }
+        SpacesModel::exist($data);
+        DayTimesModel::exist($data);
         if(array_key_exists('scen_number',$data)){
             //echo json_encode($data,JSON_UNESCAPED_UNICODE);
             if(!self::validNumberScene($data)) return 421;
@@ -39,14 +38,16 @@ class SceneModel{
 
     //PUT
     static public function updateScene($scen_number,$proj_id,$data){
+        SpacesModel::exist($data);
+        DayTimesModel::exist($data);
         $existData['proj_id'] = $proj_id;
         $data['proj_id']=$proj_id;
         $existData['scen_number'] = $scen_number;
         $data['scen_id']= self::exist($existData);
-        if($data['scen_id']==0) return 419;
+        if($data['scen_id']==0) throw new Exception(419);
         if(array_key_exists('scen_number',$data)){
             if($scen_number != $data['scen_number']){
-                if(!self::validNumberScene($data)) return 421;
+                if(!self::validNumberScene($data)) throw new Exception(421);
                 self::updateNumberScene($data,$scen_number);
             }
         } 

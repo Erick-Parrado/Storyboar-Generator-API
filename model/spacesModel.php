@@ -11,9 +11,11 @@ class SpacesModel{
     }
 
     static public function exist($data){
-        $query = "SELECT spac_id FROM spaces WHERE spac_id=:spac_id";
-        $count = self::executeQuery($query,1,$data)[1]->rowCount();
-        return ($count>0)?1:0;
+        if(array_key_exists('spac_id',$data)){
+            $query = "SELECT spac_id FROM spaces WHERE spac_id=:spac_id";
+            $count = self::executeQuery($query,1,$data)[1]->rowCount();
+            if($count<=0) throw new Exception(425);
+        }
     }
 
     static public function executeQuery($query,$confirmCod = 0,$data=null,$fetch=false){

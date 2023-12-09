@@ -136,6 +136,9 @@ class ResponseController{
             case 402:
                 self::setResult(self::$_extra);
                 break;
+            case 403:
+                self::setInfo('Escena actualizada');
+                break;
             case 419:
                 self::setError('Escena no existe');
                 break;
@@ -144,6 +147,12 @@ class ResponseController{
                 break;
             case 421:
                 self::setError('scen_number no es valido');
+                break;
+            case 425:
+                self::setError('spac_id no es valido');
+                break;
+            case 426:
+                self::setError('dayT_id no es valido');
                 break;
             case 428:
                 self::setError('Se requiere proj_id');
