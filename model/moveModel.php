@@ -14,7 +14,7 @@ class MoveModel{
         if(array_key_exists('move_id',$data)){
             $query = "SELECT move_id FROM moves WHERE move_id=:move_id";
             $count = self::executeQuery($query,1,$data)[1]->rowCount();
-            if($count<=0) throw new Exception(426);
+            if($count<=0) throw new Exception(526);
         }
     }
 

@@ -75,7 +75,8 @@ class SceneModel{
         }
         $scen_id = self::executeQuery($query,1,$data,true);
         $scen_id = (isset($scen_id[1][0]['scen_id']))?$scen_id[1][0]['scen_id']:0;
-        return ($scen_id>0)?$scen_id:0;
+        if($scen_id==0)throw new Exception(419);
+        return $scen_id;
     }
 
     static public function getProjectId($data){

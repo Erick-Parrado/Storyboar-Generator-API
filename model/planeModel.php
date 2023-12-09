@@ -35,26 +35,33 @@ class PlaneModel{
         $data['scen_id'] = SceneModel::exist($data);
         if($data['scen_id'] == 0) throw new Exception(419);
         //echo json_encode($data,JSON_UNESCAPED_UNICODE);
-        if(!self::validNumberPlane($data)) throw new Exception(521);
+        self::validNumberPlane($data);
         self::newNumberPlane($data); 
         $query = 'INSERT INTO planes(plan_duration, plan_description, plan_image, shot_id, fram_id, move_id, scen_id, plan_number) VALUES  (:plan_duration,:plan_description,:plan_image,:shot_id,:fram_id,:move_id,:scen_id,:plan_number)';
         return self::executeQuery($query,500,$data);
     }
 
     //PUT
-    static public function updatePlane($scen_number,$proj_id,$data){
-        SpaceModel::exist($data);
-        DayTimeModel::exist($data);
+    static public function updatePlane($plan_number,$scen_number,$proj_id,$data){
+        $existData['proj_id']=$proj_id;
+        $existData['scen_number'] = $scen_number;
         $data['proj_id']=$proj_id;
         $data['scen_number'] = $scen_number;
-        $data['scen_id']= self::exist($data);
-        if($data['scen_id']==0) throw new Exception(419);
-        if(array_key_exists('scen_number',$data)){
-            if($scen_number != $data['scen_number']){
-                if(!self::validNumberPlane($data)) throw new Exception(421);
-                self::updateNumberPlane($data,$scen_number);
+        $existData['plan_number'] = $plan_number;
+        $data['scen_id'] = SceneModel::exist($existData);
+        MoveModel::exist($data);
+        FramingModel::exist($data);
+        ShotModel::exist($data);
+        $data['plan_id']= self::exist($existData);
+        if($data['plan_id']==0) throw new Exception(519);
+        if(array_key_exists('plan_number',$data)){
+            if($plan_number != $data['plan_number']){
+                self::validNumberPlane($data);
+                self::updateNumberPlane($data,$plan_number);
             }
         } 
+        unset($data['scen_number']);
+        unset($data['proj_id']);
         return self::updateMethod($data);
     }
 
@@ -89,9 +96,8 @@ class PlaneModel{
     }
 
     static private function validNumberPlane($data){
-        //var_dump(self::readScenePlanes($data['scen_number'],$data['proj_id']));
-        $scenCount = (self::readScenePlanes($data['scen_number'],$data['proj_id'])[1]->rowCount());
-        return ($data['plan_number']<=$scenCount+1 && $data['plan_number']>0)?1:0;
+        $planeCount = (self::readScenePlanes($data['scen_number'],$data['proj_id'])[1]->rowCount());
+        if($data['plan_number']>$planeCount+1 || $data['plan_number']==0)throw new Exception(521);
     }
 
     static public function newNumberPlane($data){
@@ -103,13 +109,13 @@ class PlaneModel{
         }
     }
     
-    static public function updateNumberPlane($data,$preScen_id){
-        if($data['scen_number']<$preScen_id){//Movimiento de mayor a menor
-            $query = 'SELECT scen_id,scen_number,proj_id FROM scenes WHERE (scen_number BETWEEN :scen_number AND '.($preScen_id-1).') AND proj_id=:proj_id ORDER BY scen_number ASC';
+    static public function updateNumberPlane($data,$prePlan_id){
+        if($data['plan_number']<$prePlan_id){//Movimiento de mayor a menor
+            $query = 'SELECT plan_id,plan_number,scen_id FROM planes WHERE (plan_number BETWEEN :plan_number AND '.($prePlan_id-1).') AND scen_id=:scen_id ORDER BY plan_number ASC';
             self::numberChalenger($query,$data,true);
         }
-        if($data['scen_number']>$preScen_id){//Movimiento de menor a mayor
-            $query = 'SELECT scen_id,scen_number,proj_id FROM scenes WHERE (scen_number BETWEEN '.($preScen_id+1).' AND :scen_id) AND proj_id=:proj_id  ORDER BY scen_number ASC';
+        if($data['plan_number']>$prePlan_id){//Movimiento de menor a mayor
+            $query = 'SELECT plan_id,plan_number,scen_id FROM planes WHERE (plan_number BETWEEN '.($prePlan_id+1).' AND :plan_id) AND scen_id=:scen_id  ORDER BY plan_number ASC';
             //echo json_encode($data,JSON_UNESCAPED_SLASHES);
             self::numberChalenger($query,$data,false);
         }
@@ -126,6 +132,9 @@ class PlaneModel{
 
     static public function numberChalenger($query,$data,$way){
         $changePlanes = self::executeQuery($query,1,$data)[1]->fetchAll(PDO::FETCH_ASSOC);
+        
+        echo json_encode($changePlanes,JSON_UNESCAPED_UNICODE);
+        echo '\\\\\\\\';
         foreach($changePlanes as $plane){
             if($way){
                 $plane['plan_number']++;
@@ -133,6 +142,7 @@ class PlaneModel{
             else{
                 $plane['plan_number']--;
             }
+            echo json_encode($plane,JSON_UNESCAPED_UNICODE);
             self::updateMethod($plane);
         }
     }

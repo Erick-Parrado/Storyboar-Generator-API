@@ -72,7 +72,7 @@ class PlaneController extends EndpointController{
                 case 'PUT':
                     $this->needMore();
                     $this->validateFields();
-                    //$response = SceneModel::updateScene($this->_complement,$this->_add,$this->_data);
+                    $response = PlaneModel::updatePlane($this->_complement,$this->_add,$this->_more,$this->_data);
                     break;
                 case 'DELETE':
                     $this->needMore();
