@@ -23,6 +23,7 @@ class UserModel extends TableModel{
         parent::__construct($table_name,$table_prefix,$table_fields,$matcher,$model_baseCode);
     }
 
+    //GET
     static public function readUser($user_id=0){
         $data = [];
         $query = 'SELECT user_id,user_name,user_lastName,user_email,user_pass,user_phone FROM users';
@@ -38,7 +39,6 @@ class UserModel extends TableModel{
         $data = self::generateSalting($data);
         $query = "INSERT INTO users(user_name, user_lastName, user_email, user_pass, user_phone, us_identifier, us_key) VALUES (:user_name,:user_lastName,:user_email,:user_pass,:user_phone,:us_identifier,:us_key)";
         return self::executeQuery($query,200,$data);
-        return 209;
     }
 
     //PUT
@@ -47,7 +47,7 @@ class UserModel extends TableModel{
         self::exist($data);
         self::emailExist($data);
         $data = self::generateSalting($data);
-        $model = new UserModel();
+        new UserModel();
         parent::updateMethod($data);
         return 202;
         throw new Exception(219);
@@ -94,7 +94,7 @@ class UserModel extends TableModel{
     }
 
     static public function exist($data){
-        $model = new UserModel();
+        new UserModel();
         parent::exist($data);
     }
     
@@ -118,7 +118,7 @@ class UserModel extends TableModel{
 
     //Ejecutor de queries
     static public function  executeQuery($query,$confirmCod = 0,$data=null,$fetch=false,$matcher=null){
-        $model = new UserModel();
+        new UserModel();
         return parent::executeQuery($query,$confirmCod,$data,$fetch);
     }
     

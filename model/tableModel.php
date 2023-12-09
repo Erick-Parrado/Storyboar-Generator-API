@@ -52,6 +52,7 @@ class TableModel{
     static public function  executeQuery($query,$confirmCod,$data=null,$fetch=false,$matcher=null){
         $matcher = ($matcher == null)?self::$_matcher:$matcher;
         $statement= Connection::doConnection()->prepare($query);
+        //echo json_encode(self::$_fields,JSON_UNESCAPED_UNICODE);
         if(isset($data)){
             foreach(self::$_fields as $field){
                 $pattern = '/^.*:'.$field.'.*$/';
