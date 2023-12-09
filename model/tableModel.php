@@ -24,6 +24,12 @@ class TableModel{
         }
         return $data;
     }
+    
+    static public function  exist($data){
+        $query = "SELECT ".self::$_prefix."_id FROM ".self::$_table." WHERE ".self::$_prefix."_id =:".self::$_prefix."_id";
+        $count = self::executeQuery($query,200,$data)[1]->rowCount();
+        if($count<=0)throw new Exception(self::$_baseCode+19);
+    }
 
     static protected function updateMethod($data){
         self::cleanData($data);

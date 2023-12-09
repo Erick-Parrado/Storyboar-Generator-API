@@ -19,38 +19,7 @@ class UserModel extends TableModel{
             'us_key'
         );
         $model_baseCode = 200;
-        $matcher = function($statement,$field,$data){
-            switch($field){
-                case "user_id":
-                    $statement->bindParam(":user_id", $data["user_id"],PDO::PARAM_INT);
-                    break;
-                case "user_name":
-                    $statement->bindParam(":user_name", $data["user_name"],PDO::PARAM_STR);
-                    break;
-                case "user_lastName":
-                    $statement->bindParam(":user_lastName", $data["user_lastName"],PDO::PARAM_STR);
-                    break;
-                case "user_email":
-                    $statement->bindParam(":user_email", $data["user_email"],PDO::PARAM_STR);
-                    break;
-                case "user_pass":
-                    $statement->bindParam(":user_pass", $data["user_pass"],PDO::PARAM_STR);
-                    break;
-                case "user_phone":
-                    $statement->bindParam(":user_phone", $data["user_phone"],PDO::PARAM_STR);
-                    break;
-                case "user_age":
-                    $statement->bindParam(":user_age", $data["user_age"],PDO::PARAM_INT);
-                    break;
-                case "us_identifier":
-                    $statement->bindParam(":us_identifier", $data["us_identifier"],PDO::PARAM_STR);
-                    break;
-                case "us_key":
-                    $statement->bindParam(":us_key", $data["us_key"],PDO::PARAM_STR);
-                    break;
-            }
-            return $statement;
-        };
+        $matcher = self::getMatcher();
         parent::__construct($table_name,$table_prefix,$table_fields,$matcher,$model_baseCode);
     }
 
@@ -74,23 +43,21 @@ class UserModel extends TableModel{
     //PUT
     static public function updateUser($id,$data){
         $data['user_id']=$id;
-        if(self::exist($data)){
-            self::emailExist($data);
-            $data = self::generateSalting($data);
-            $model = new UserModel();
-            parent::updateMethod($data);
-            return 202;
-        }
+        self::exist($data);
+        self::emailExist($data);
+        $data = self::generateSalting($data);
+        $model = new UserModel();
+        parent::updateMethod($data);
+        return 202;
         throw new Exception(219);
     }
 
     //DELETE
     static public function deleteUser($id){
         $data['user_id']=$id;
-        if(self::exist($data)){
-            $query = 'DELETE FROM users WHERE user_id = :user_id';
-            return self::executeQuery($query,203,$data);
-        }
+        self::exist($data);
+        $query = 'DELETE FROM users WHERE user_id = :user_id';
+        return self::executeQuery($query,203,$data);
         return 219;
     }
     
@@ -133,9 +100,8 @@ class UserModel extends TableModel{
     }
 
     static public function exist($data){
-        $query = "SELECT user_id FROM users WHERE user_id=:user_id";
-        $count = self::executeQuery($query,200,$data)[1]->rowCount();
-        return ($count>0)?1:0;
+        $model = new UserModel();
+        parent::exist($data);
     }
 
     
@@ -161,6 +127,41 @@ class UserModel extends TableModel{
     static public function  executeQuery($query,$confirmCod = 0,$data=null,$fetch=false,$matcher=null){
         $model = new UserModel();
         return parent::executeQuery($query,$confirmCod,$data,$fetch);
+    }
+    
+    static private function getMatcher(){
+        return function($statement,$field,$data){
+            switch($field){
+                case "user_id":
+                    $statement->bindParam(":user_id", $data["user_id"],PDO::PARAM_INT);
+                    break;
+                case "user_name":
+                    $statement->bindParam(":user_name", $data["user_name"],PDO::PARAM_STR);
+                    break;
+                case "user_lastName":
+                    $statement->bindParam(":user_lastName", $data["user_lastName"],PDO::PARAM_STR);
+                    break;
+                case "user_email":
+                    $statement->bindParam(":user_email", $data["user_email"],PDO::PARAM_STR);
+                    break;
+                case "user_pass":
+                    $statement->bindParam(":user_pass", $data["user_pass"],PDO::PARAM_STR);
+                    break;
+                case "user_phone":
+                    $statement->bindParam(":user_phone", $data["user_phone"],PDO::PARAM_STR);
+                    break;
+                case "user_age":
+                    $statement->bindParam(":user_age", $data["user_age"],PDO::PARAM_INT);
+                    break;
+                case "us_identifier":
+                    $statement->bindParam(":us_identifier", $data["us_identifier"],PDO::PARAM_STR);
+                    break;
+                case "us_key":
+                    $statement->bindParam(":us_key", $data["us_key"],PDO::PARAM_STR);
+                    break;
+            }
+            return $statement;
+        };
     }
 }
 ?>
