@@ -172,6 +172,13 @@ class ResponseController{
                         'proj_id'
                 ));
                 break;
+            case 500:
+                self::setError('Plano creado');
+                break;
+            case 501:
+            case 502:
+                self::setResult(self::$_extra);
+                break;
             case 503:
                 self::setError('Plano actualizado');
                 break;

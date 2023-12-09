@@ -20,7 +20,7 @@ class PlaneController extends EndpointController{
             "fram_id",
             "scen_id"
         );
-        $_more = $more;
+        $this->_more = $more;
         parent::__construct(500,$method,$complement,$data,$add,$fields);    
     }
 
@@ -29,9 +29,9 @@ class PlaneController extends EndpointController{
             $response = 0;
             switch($this->_method){
                 case 'GET':
-                    $this->needAdd();
                     switch($this->_add){
                         case 'scene':
+                            $this->needAdd();
                             //$response = SceneModel::readProjectScenes($this->_complement);
                             break;
                         case 'moves':
@@ -44,8 +44,14 @@ class PlaneController extends EndpointController{
                             //$response = SpacesModel::readSpaces($this->_complement);
                             break;
                         default:
-                            //if(!is_numeric($this->_add))throw new Exception(104);
-                            //$response = SceneModel::readScene($this->_complement,$this->_add);
+                            if($this->_more != null){
+                                $this->needMore();
+                                $response = PlaneModel::readPlane($this->_complement,$this->_add,$this->_more);
+                            }
+                            else{
+                                $this->needAdd();
+                                $response = PlaneModel::readScenePlanes($this->_complement,$this->_add);
+                            }
                             break;
                     }
                     break;
@@ -81,10 +87,14 @@ class PlaneController extends EndpointController{
             ResponseController::response($e->getMessage());
         }
     }
+    protected function needAdd(){
+        parent::needAdd();
+        if($this->_more!=null) throw new Exception(104);
+    }
 
     private function needMore(){
-        $this->needAdd();
-        if($this->_more==null) throw new Exception(104);
+        parent::needAdd();
+        if($this->_more==null || !is_numeric($this->_add)) throw new Exception(104);
     }
 }
 ?>

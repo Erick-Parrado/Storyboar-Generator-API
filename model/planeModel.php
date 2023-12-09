@@ -13,7 +13,7 @@ class PlaneModel{
         $data['scen_number'] = $scen_number;
         $data['proj_id'] = $proj_id;
         $data['plan_id']= self::exist($data);
-        $query = 'SELECT * FROM scenes WHERE plan_id =:plan_id';
+        $query = 'SELECT * FROM planes WHERE plan_id =:plan_id';
         return self::executeQuery($query,501,$data);
     }
     
@@ -74,6 +74,9 @@ class PlaneModel{
     static public function exist($data){
         //echo json_encode($data,JSON_UNESCAPED_SLASHES);
         $query = '';
+        if(!array_key_exists('scen_id',$data)){
+            $data['scen_id']= SceneModel::exist($data);
+        }
         if(array_key_exists('plan_id',$data)){
             $query = "SELECT plan_id FROM scenes WHERE plan_id = :plan_id";
         }

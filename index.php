@@ -24,6 +24,7 @@ switch ($count){
     case 3:
     case 4:
     case 5:
+    case 6:
         $endPoint = ($routesArray[3]);
         enterRoutes($endPoint);
         break;
