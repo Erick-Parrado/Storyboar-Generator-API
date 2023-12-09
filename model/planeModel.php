@@ -180,7 +180,7 @@ class PlaneModel{
                     $query .= " WHERE plan_id=:plan_id";
                 }
             }
-            return self::executeQuery($query,503,$data);
+            return 503;
         }
         return 519;
     }
