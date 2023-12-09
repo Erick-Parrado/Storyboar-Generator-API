@@ -33,7 +33,6 @@ class PlaneModel{
         $data['proj_id'] = $proj_id;
         $data['scen_number'] = $scen_number;
         $data['scen_id'] = SceneModel::exist($data);
-        if($data['scen_id'] == 0) throw new Exception(419);
         //echo json_encode($data,JSON_UNESCAPED_UNICODE);
         self::validNumberPlane($data);
         self::newNumberPlane($data); 
@@ -66,14 +65,15 @@ class PlaneModel{
     }
 
     //DELETE
-    static public function deletePlane($scen_number,$proj_id){
+    static public function deletePlane($plan_number,$scen_number,$proj_id){
         $data['proj_id']=$proj_id;
         $data['scen_number'] = $scen_number;
-        $data['scen_id']= self::exist($data);
-        if($data['scen_id']==0) throw new Exception(419);
+        $data['plan_number'] = $plan_number;
+        $data['scen_id']=SceneModel::exist($data);
+        $data['plan_id']= self::exist($data);
         self::deleteNumberPlane($data);
-        $query = 'DELETE FROM scenes WHERE scen_id = :scen_id';
-        return self::executeQuery($query,404,$data);
+        $query = 'DELETE FROM planes WHERE plan_id = :plan_id';
+        return self::executeQuery($query,504,$data);
     }
     
 
@@ -85,7 +85,7 @@ class PlaneModel{
             $data['scen_id']= SceneModel::exist($data);
         }
         if(array_key_exists('plan_id',$data)){
-            $query = "SELECT plan_id FROM scenes WHERE plan_id = :plan_id";
+            $query = "SELECT plan_id FROM planes WHERE plan_id = :plan_id";
         }
         else{
             $query = "SELECT plan_id FROM planes WHERE plan_number=:plan_number AND scen_id = :scen_id";
@@ -101,12 +101,11 @@ class PlaneModel{
     }
 
     static public function newNumberPlane($data){
-        $scenCount = (self::readScenePlanes($data['scen_number'],$data['proj_id'])[1]->rowCount());
-        if($data['plan_number']<=$scenCount){
-            $query = 'SELECT plan_id,plan_number,scen_id FROM planes WHERE plan_number>=:plan_number AND scen_id = :scen_id  ORDER BY plan_number ASC';
-            //echo json_encode($data,JSON_UNESCAPED_SLASHES);
-            self::numberChalenger($query,$data,true);
-        }
+        self::validNumberPlane($data);
+        $query = 'SELECT plan_id,plan_number,scen_id FROM planes WHERE plan_number>=:plan_number AND scen_id = :scen_id  ORDER BY plan_number ASC';
+        //echo json_encode($data,JSON_UNESCAPED_SLASHES);
+        self::numberChalenger($query,$data,true);
+    
     }
     
     static public function updateNumberPlane($data,$prePlan_id){
@@ -123,18 +122,15 @@ class PlaneModel{
 
     
     static public function deleteNumberPlane($data){
-        $scenCount = (self::readScenePlanes($data['proj_id'])[1]->rowCount());
-        $query = 'SELECT scen_id,scen_number,proj_id FROM scenes WHERE scen_number>:scen_number AND proj_id = :proj_id  ORDER BY scen_number ASC';
+        $query = 'SELECT plan_id,plan_number,scen_id FROM planes WHERE plan_number>:plan_number AND scen_id = :scen_id  ORDER BY plan_number ASC';
         //echo json_encode($data,JSON_UNESCAPED_SLASHES);
-        $changePlanes = self::executeQuery($query,1,$data)[1]->fetchAll(PDO::FETCH_ASSOC);
         self::numberChalenger($query,$data,false);
     }
 
     static public function numberChalenger($query,$data,$way){
+
         $changePlanes = self::executeQuery($query,1,$data)[1]->fetchAll(PDO::FETCH_ASSOC);
         
-        echo json_encode($changePlanes,JSON_UNESCAPED_UNICODE);
-        echo '\\\\\\\\';
         foreach($changePlanes as $plane){
             if($way){
                 $plane['plan_number']++;
@@ -142,7 +138,6 @@ class PlaneModel{
             else{
                 $plane['plan_number']--;
             }
-            echo json_encode($plane,JSON_UNESCAPED_UNICODE);
             self::updateMethod($plane);
         }
     }
@@ -158,8 +153,8 @@ class PlaneModel{
             "shot_id",
             "move_id",
             "fram_id",
-            "scen_id");
-
+            "scen_id"
+        );
         if(!array_key_exists('plan_id',$data)){
             $data['plan_id'] = self::exist($data);
         }

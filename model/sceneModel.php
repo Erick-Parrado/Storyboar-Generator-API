@@ -114,10 +114,8 @@ class SceneModel{
 
     
     static public function deleteNumberScene($data){
-        $scenCount = (self::readProjectScenes($data['proj_id'])[1]->rowCount());
         $query = 'SELECT scen_id,scen_number,proj_id FROM scenes WHERE scen_number>:scen_number AND proj_id = :proj_id  ORDER BY scen_number ASC';
         //echo json_encode($data,JSON_UNESCAPED_SLASHES);
-        $changeScenes = self::executeQuery($query,1,$data)[1]->fetchAll(PDO::FETCH_ASSOC);
         self::numberChalenger($query,$data,false);
     }
 

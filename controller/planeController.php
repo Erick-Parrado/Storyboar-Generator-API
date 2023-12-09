@@ -76,7 +76,7 @@ class PlaneController extends EndpointController{
                     break;
                 case 'DELETE':
                     $this->needMore();
-                    //$response = SceneModel::deleteScene($this->_complement,$this->_add,$this->_data);
+                    $response = PlaneModel::deletePlane($this->_complement,$this->_add,$this->_more);
                     break;
                 default:
                     $response = 104;
