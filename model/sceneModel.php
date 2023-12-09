@@ -78,6 +78,13 @@ class SceneModel{
         return ($scen_id>0)?$scen_id:0;
     }
 
+    static public function getProjectId($data){
+        $query = "SELECT proj_id FROM scenes WHERE scen_id = :scen_id";
+        $proj_id = self::executeQuery($query,1,$data,true);
+        $proj_id = (isset($proj_id[1][0]['proj_id']))?$proj_id[1][0]['proj_id']:0;
+        return ($proj_id>0)?$proj_id:0;
+    }
+
     static private function validNumberScene($data){
         $scenCount = (self::readProjectScenes($data['proj_id'])[1]->rowCount());
         return ($data['scen_number']<=$scenCount+1 && $data['scen_number']>0)?1:0;

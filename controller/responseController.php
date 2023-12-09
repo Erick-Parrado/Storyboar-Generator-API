@@ -172,11 +172,37 @@ class ResponseController{
                         'proj_id'
                 ));
                 break;
+            case 503:
+                self::setError('Plano actualizado');
+                break;
+            case 519:
+                self::setError('Plano no existe');
+                break;
+            case 520:
+                self::setError('Campos no reconocidos en la data de planes');
+                break;
+            case 521:
+                self::setError('plan_number no es valido');
+                break;
+            case 528:
+                self::setError('Se requiere scen_number');
+                break;
+            case 529:
+                self::setError('Para crear un plane requiere todos los campos',
+                    array( 
+                        "plan_number",
+                        "plan_duration",
+                        "plan_description",
+                        "plan_image",
+                        "shot_id",
+                        "scen_id",
+                        "move_id"
+                ));
+                break;
             case 600:
                 self::setInfo('Inicio de sesion','OK');
                 self::$_response['credentials'] = self::$_extra;
                 break;
-            case 600:
             case 604:
                 self::setError('ERROR EN CREDENCIALES');
                 self::$_response['credentials'] = null;

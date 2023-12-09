@@ -1,9 +1,11 @@
 <?php
-require_once 'model/sceneModel.php';
 require_once 'controller/endpointController.php';
-require_once 'model/spacesModel.php';
+require_once 'model/planeModel.php';
+require_once 'model/shotModel.php';
+require_once 'model/framingModel.php';
+require_once 'model/moveModel.php';
 
-class SceneController extends EndpointController{
+class PlaneController extends EndpointController{
     private $_more;
 
     function __construct($method, $complement=null, $data=null,$add=null,$more=null){
@@ -14,12 +16,12 @@ class SceneController extends EndpointController{
             "plan_description",
             "plan_image",
             "shot_id",
-            "scen_id",
             "move_id",
+            "fram_id",
             "scen_id"
         );
         $_more = $more;
-        parent::__construct(400,$method,$complement,$data,$add,$fields);    
+        parent::__construct(500,$method,$complement,$data,$add,$fields);    
     }
 
     public function index(){
@@ -48,19 +50,19 @@ class SceneController extends EndpointController{
                     }
                     break;
                 case 'POST':
-                    $this->needNone();
+                    $this->needAdd();
                     $strictFields = array(   
                         "plan_number",
                         "plan_duration",
                         "plan_description",
                         "plan_image",
                         "shot_id",
-                        "scen_id",
-                        "move_id"
+                        "move_id",
+                        "fram_id"
                     );
                     $this->setStrict($strictFields);
                     $this->strictFields();
-                    //$response = SceneModel::createScene($this->_data);
+                    $response = PlaneModel::createPlane($this->_add,$this->_complement,$this->_data);
                     break;
                 case 'PUT':
                     $this->needMore();
@@ -76,7 +78,7 @@ class SceneController extends EndpointController{
             }
             ResponseController::response($response);
         }catch(Exception $e){
-            ResponseController::response((int)$e->getMessage());
+            ResponseController::response($e->getMessage());
         }
     }
 

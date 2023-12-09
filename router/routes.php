@@ -4,6 +4,7 @@ require_once 'controller/loginController.php';
 require_once 'controller/projectController.php';
 require_once 'controller/teamController.php';
 require_once 'controller/sceneController.php';
+require_once 'controller/planeController.php';
 
 $routesArray = array_filter(explode("/",$_SERVER['REQUEST_URI']));
 
@@ -19,7 +20,9 @@ if ($routesArray[3] == ''){
     $method = $_SERVER['REQUEST_METHOD'];
     $endPoint = (($routesArray)[3]);
     $complement =  (array_key_exists(4,$routesArray))?($routesArray)[4]:0;
-    $add  = (array_key_exists(5,$routesArray))?($routesArray)[5]:"";
+    $add  = (array_key_exists(5,$routesArray))?($routesArray)[5]:null;
+    $more  = (array_key_exists(6,$routesArray))?($routesArray)[6]:null;
+
 
     // echo 'endPoint:'.$endPoint;
     // echo 'add:'.$add;
@@ -37,15 +40,14 @@ if ($routesArray[3] == ''){
         case 'scenes':
             $petition = new SceneController($method,$complement,$_POST,$add);
             break;
-            
         case 'planes':
-            echo 'Planes';
+            $petition = new PlaneController($method,$complement,$_POST,$add,$more);
             break;
         case 'teams':
-            $petition = new teamController($method,$complement,$_POST,$add);
+            $petition = new TeamController($method,$complement,$_POST,$add);
             break;
         case 'login':
-            $petition = new loginController($method,$complement,$_POST);
+            $petition = new LoginController($method,$complement,$_POST);
             break;
         default:
             ResponseController::response(104);
