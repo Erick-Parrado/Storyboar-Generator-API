@@ -2,6 +2,7 @@
 require_once 'model/Connection.php';
 require_once 'controller/responseController.php';
 require_once 'controller/routesController.php';
+require_once 'model/userModel.php';
 
 header('Access-Control-Allow-Headers: Content-Type');
 header('Access-Control-Allow-Origin: *');
@@ -29,40 +30,38 @@ switch ($count){
         enterRoutes($endPoint);
         break;
     default:
-        ResponseController::response(109);
+        ResponseController::response(104);
 }
 
 function enterRoutes($endPoint){
-    if($endPoint != 'login'){
-        if(isset($_SERVER['PHP_AUTH_USER']) && ($_SERVER['PHP_AUTH_PW'])){
-            /*$ok=false;
-            $identifier = $_SERVER['PHP_AUTH_USER'];
-            $key =  $_SERVER['PHP_AUTH_PW'];
-            $users = UserModel::getUserAuth();
-            foreach ($users as $u){
-                if($identifier.":".$key == $u["us_identifier"].":". $u["us_key"]){
-                    $ok = true;
+    try{
+        if($endPoint != 'login'){
+            if(isset($_SERVER['PHP_AUTH_USER']) && ($_SERVER['PHP_AUTH_PW'])){
+                $ok=false;
+                $data['us_identifier'] = $_SERVER['PHP_AUTH_USER'];
+                $data['us_key'] = $_SERVER['PHP_AUTH_PW'];
+                $ok = UserModel::validateAuth($data);
+                if($ok){
+                    $routes = new RoutesController();
+                    $routes -> index();
+                }
+                else{
+                    throw new Exception(115);
+                    return;
                 }
             }
-            if($ok){
-                $routes = new RoutesController();
-                $routes -> index();
-            }
             else{
-                ResponseController::response(505);
+                throw new Exception(114);
                 return;
-            }*/
-            $routes = new RoutesController();
-            $routes -> index();
+            }
         }
         else{
-            ResponseController::response(115);
-            return;
+            $routes = new RoutesController();
+            $routes->index();
         }
     }
-    else{
-        $routes = new RoutesController();
-        $routes->index();
+    catch(Exception $e){
+        ResponseController::response($e->getMessage());
     }
 }
 ?>

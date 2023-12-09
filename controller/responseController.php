@@ -27,11 +27,11 @@ class ResponseController{
         }
         
         switch(self::$_cod){
-            case 104:
-                self::setError('Ruta no encontrada');
+            case 0:
+                self::setError('Response has\'t be caught');
                 break;
-            case 109:
-                self::setError('Exceso de parametros');
+            case 104:
+                self::setError('Route not found');
                 break;
             case 114:
                 self::setError('NO TIENE CREDENCIALES');
@@ -66,8 +66,8 @@ class ResponseController{
             case 221:
                 self::setError('user_email no cumple con las condiciones mínimas',
                     array(
-                        'Longitud de al menos 8 cárteres',
-                        'Dominio gmail.com'
+                        'Usuario de al menos 8 cárteres',
+                        'Dominio simple o doble'
                 ));
                 break;
             case 222:
@@ -278,17 +278,17 @@ class ResponseController{
                 self::setError('Data no ha sido proveída');
                 break;
             case 900:
-                self::setInfo('Conexión realizada');
+                self::setInfo('Success connection');
                 break;
             case 904:
-                self::setInfo('Servicio desconocido');
+                self::setInfo('Unknown service');
                 break;
             case 909:
-                self::setInfo('Error de conexion');
+                self::setInfo('Connection error');
                 self::$_response['info'] = self::$_extra;
                 break;
             case 910:
-                self::setInfo('Error en sentencia SQL',self::$_extra);
+                self::setInfo('SQL Error',self::$_extra);
                 break;
             default:
                 self::setError('Mensaje no identificado :v',self::$_extra);

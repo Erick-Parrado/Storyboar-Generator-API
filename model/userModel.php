@@ -1,5 +1,27 @@
 <?php
-class UserModel{
+
+require_once 'model/tableModel.php';
+
+class UserModel extends TableModel{
+    public function __construct()
+    {
+        $table_name = 'users';
+        $table_prefix = 'user';
+        $table_fields = array(
+            'user_id',
+            'user_name',
+            'user_lastName',
+            'user_email',
+            'user_pass',
+            'user_phone',
+            'user_age',
+            'us_identifier',
+            'us_key'
+        );
+        $model_baseCode = 200;
+        parent::__construct($table_name,$table_prefix,$table_fields,$model_baseCode);
+    }
+
     static public function readUser($user_id=0){
         $data = [];
         $query = 'SELECT user_id,user_name,user_lastName,user_email,user_pass,user_phone FROM users';
@@ -10,24 +32,19 @@ class UserModel{
         return self::executeQuery($query,201,$data);
     }
     //POST
-    static public function createUser($dataIn){
-        if(!(self::emailExist($dataIn))){
-            $query = "INSERT INTO `users`(`user_name`, `user_lastName`, `user_email`, `user_pass`, `user_phone`, `us_identifier`, `us_key`) VALUES (:user_name,:user_lastName,:user_email,:user_pass,:user_phone,:us_identifier,:us_key)";
-            return self::executeQuery($query,200,$dataIn);
-        }
+    static public function createUser($data){
+        self::emailExist($data);
+        $query = "INSERT INTO users(user_name, user_lastName, user_email, user_pass, user_phone, us_identifier, us_key) VALUES (:user_name,:user_lastName,:user_email,:user_pass,:user_phone,:us_identifier,:us_key)";
+        return self::executeQuery($query,200,$data);
         return 209;
     }
 
     //PUT
-    static public function updateUser($id,$dataIn){
-        $data = $dataIn;
+    static public function updateUser($id,$data){
         $data['user_id']=$id;
         if(self::exist($data)){
-            if(array_key_exists('user_email',$data)){
-                if(self::emailExist($data)){
-                    return 209;
-                }
-            }
+            self::emailExist($data);
+            $data = self::generateSalting($data);
             $query = "UPDATE users SET ";
             $dataAO = new ArrayObject($data);
             $iter = $dataAO->getIterator();
@@ -43,7 +60,7 @@ class UserModel{
             }
             return self::executeQuery($query,202,$data);
         }
-        return 219;
+        throw new Exception(219);
     }
 
     //DELETE
@@ -73,16 +90,25 @@ class UserModel{
                 //var_dump($response);
                 return $response;
             }
-            return 604;
+            throw new Exception(604);
         }
-        return 604;
+        throw new Exception(604);
+    }
+
+    static public function validateAuth($data){
+        $query = 'SELECT user_id FROM users WHERE us_identifier=:us_identifier AND us_key=:us_key';
+        $count = self::executeQuery($query,1,$data)[1]->rowCount();
+        if($count<=0) throw new Exception(115);
+        return true;
     }
 
     //Extras
     static private function emailExist($data){
-        $query = "SELECT user_email FROM users WHERE user_email=:user_email";
-        $count = self::executeQuery($query,200,$data)[1]->rowCount();
-        return ($count>0)?1:0;
+        if(array_key_exists('user_email',$data)){
+            $query = "SELECT user_email FROM users WHERE user_email=:user_email";
+            $count = self::executeQuery($query,200,$data)[1]->rowCount();
+            if($count<0) throw new Exception(209);
+        }
     }
 
     static public function exist($data){
@@ -91,60 +117,60 @@ class UserModel{
         return ($count>0)?1:0;
     }
 
-    //Ejecutor de queries
-    static public function  executeQuery($query,$confirmCod = 0,$data=null,$fetch=false){
-        $fields = array('user_id','user_name','user_lastName','user_email','user_pass','user_phone','user_age','us_identifier','us_key');
-        $statement= Connection::doConnection()->prepare($query);
-        if(isset($data)){
-            foreach(array_keys($fields) as $index){
-                $pattern = '/^.*:'.$fields[$index].'.*$/';
-                $result = (preg_match($pattern,$query));
-                if(!$result) continue;
-                switch($index){
-                    case 0:
-                        $statement->bindParam(":user_id", $data["user_id"],PDO::PARAM_INT);
-                        break;
-                    case 1:
-                        $statement->bindParam(":user_name", $data["user_name"],PDO::PARAM_STR);
-                        break;
-                    case 2:
-                        $statement->bindParam(":user_lastName", $data["user_lastName"],PDO::PARAM_STR);
-                        break;
-                    case 3:
-                        $statement->bindParam(":user_email", $data["user_email"],PDO::PARAM_STR);
-                        break;
-                    case 4:
-                        $statement->bindParam(":user_pass", $data["user_pass"],PDO::PARAM_STR);
-                        break;
-                    case 5:
-                        $statement->bindParam(":user_phone", $data["user_phone"],PDO::PARAM_STR);
-                        break;
-                    case 6:
-                        $statement->bindParam(":user_age", $data["user_age"],PDO::PARAM_INT);
-                        break;
-                    case 7:
-                        $statement->bindParam(":us_identifier", $data["us_identifier"],PDO::PARAM_STR);
-                        break;
-                    case 8:
-                        $statement->bindParam(":us_key", $data["us_key"],PDO::PARAM_STR);
-                        break;
-                }
+    
+    static private function generateSalting($data){
+        $trimmed_data="";
+        if(($data !="") || (!empty($data))){
+            $trimmed_data = array_map('trim', $data);
+            if(isset($data['user_pass'])){
+                $key = crypt($trimmed_data['user_pass'],'$1$story$board$Generator$');
+                $key = str_replace("$","W4rT",$key);
+                $trimmed_data['us_key']=$key;
             }
+            if(isset($data['user_email'])){
+                $identifier = crypt($trimmed_data['user_email'],'$1$Wasaaaa$');
+                $identifier = str_replace("$","y78",$identifier);
+                $trimmed_data['us_identifier']=$identifier;
+            }
+            return $trimmed_data;
         }
+    }
 
-        if(preg_match('/^SELECT.*$/',$query)){
-            $error = $statement->execute() ? false : Connection::doConnection()->errorInfo();
-            if($error != false) return array(910,$error->getMessage());
-            if($fetch) return array($confirmCod,$statement->fetchAll());
-            return array($confirmCod,$statement);
-        }
-        else{
-            $error = $statement->execute() ? false : Connection::doConnection()->errorInfo();
-            $statement-> closeCursor();
-            $statement = null;
-            if($error != false) return array(910,$error->getMessage());
-            else return $confirmCod;
-        }
+    //Ejecutor de queries
+    static public function  executeQuery($query,$confirmCod = 0,$data=null,$fetch=false,$matcher=null){
+        $model = new UserModel();
+        return parent::executeQuery($query,$confirmCod,$data,$fetch,function($statement,$field,$data){
+            switch($field){
+                case "user_id":
+                    $statement->bindParam(":user_id", $data["user_id"],PDO::PARAM_INT);
+                    break;
+                case "user_name":
+                    $statement->bindParam(":user_name", $data["user_name"],PDO::PARAM_STR);
+                    break;
+                case "user_lastName":
+                    $statement->bindParam(":user_lastName", $data["user_lastName"],PDO::PARAM_STR);
+                    break;
+                case "user_email":
+                    $statement->bindParam(":user_email", $data["user_email"],PDO::PARAM_STR);
+                    break;
+                case "user_pass":
+                    $statement->bindParam(":user_pass", $data["user_pass"],PDO::PARAM_STR);
+                    break;
+                case "user_phone":
+                    $statement->bindParam(":user_phone", $data["user_phone"],PDO::PARAM_STR);
+                    break;
+                case "user_age":
+                    $statement->bindParam(":user_age", $data["user_age"],PDO::PARAM_INT);
+                    break;
+                case "us_identifier":
+                    $statement->bindParam(":us_identifier", $data["us_identifier"],PDO::PARAM_STR);
+                    break;
+                case "us_key":
+                    $statement->bindParam(":us_key", $data["us_key"],PDO::PARAM_STR);
+                    break;
+            }
+            return $statement;
+        });
     }
 }
 ?>

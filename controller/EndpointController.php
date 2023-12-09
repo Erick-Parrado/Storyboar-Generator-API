@@ -27,7 +27,7 @@ class EndpointController{
     }
 
     protected function needComplement(){
-        if((!is_numeric($this->_complement) && $this->_complement<=0) || $this->_add != null) throw new Exception(104);
+        if((!is_numeric($this->_complement) || $this->_complement<=0) || $this->_add != null) throw new Exception(104);
     }
 
     protected function needAdd(){
