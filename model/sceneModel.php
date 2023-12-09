@@ -1,8 +1,8 @@
 <?php
 
 require_once 'model/projectModel.php';
-require_once 'model/spacesModel.php';
-require_once 'model/dayTimesModel.php';
+require_once 'model/spaceModel.php';
+require_once 'model/dayTimeModel.php';
 
 class SceneModel{
 
@@ -23,13 +23,11 @@ class SceneModel{
     }
 
     //POST
-    static public function createScene($data){
-        SpacesModel::exist($data);
-        DayTimesModel::exist($data);
-        if(array_key_exists('scen_number',$data)){
-            //echo json_encode($data,JSON_UNESCAPED_UNICODE);
-            if(!self::validNumberScene($data)) return 421;
-        } 
+    static public function createScene($proj_id,$data){
+        $data['proj_id'] = $proj_id;
+        SpaceModel::exist($data);
+        DayTimeModel::exist($data);
+        if(!self::validNumberScene($data)) return 421;
         self::newNumberScene($data); 
         //echo json_encode($data,JSON_UNESCAPED_UNICODE);
         $query = 'INSERT INTO `scenes`(`scen_number`, `scen_duration`, `scen_place`, `dayT_id`, `spac_id`, `scen_argument`, `proj_id`) VALUES  (:scen_number,:scen_duration,:scen_place,:dayT_id,:spac_id,:scen_argument,:proj_id)';
@@ -38,8 +36,8 @@ class SceneModel{
 
     //PUT
     static public function updateScene($scen_number,$proj_id,$data){
-        SpacesModel::exist($data);
-        DayTimesModel::exist($data);
+        SpaceModel::exist($data);
+        DayTimeModel::exist($data);
         $data['proj_id']=$proj_id;
         $data['scen_number'] = $scen_number;
         $data['scen_id']= self::exist($data);

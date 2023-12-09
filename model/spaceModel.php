@@ -1,28 +1,28 @@
 <?php
-class DayTimesModel{
-    static public function readDayTimes($dayT_id){
+class SpaceModel{
+    static public function readSpaces($spac_id){
         $data= [];
-        $query = 'SELECT * FROM day_times';
-        if($dayT_id > 0 && $dayT_id != null){
-            $data['dayT_id'] = $dayT_id;
-            $query .= ' WHERE dayT_id =:dayT_id';
+        $query = 'SELECT * FROM spaces';
+        if($spac_id > 0 && $spac_id != null){
+            $data['spac_id'] = $spac_id;
+            $query .= ' WHERE spac_id =:spac_id';
         }
         return self::executeQuery($query,751,$data);
     }
 
     static public function exist($data){
-        if(array_key_exists('dayT_id',$data)){
-            $query = "SELECT dayT_id FROM day_times WHERE dayT_id=:dayT_id";
+        if(array_key_exists('spac_id',$data)){
+            $query = "SELECT spac_id FROM spaces WHERE spac_id=:spac_id";
             $count = self::executeQuery($query,1,$data)[1]->rowCount();
-            if($count<=0) throw new Exception(426);
+            if($count<0) throw new Exception(425);
         }
     }
 
     static public function executeQuery($query,$confirmCod = 0,$data=null,$fetch=false){
         $fields = array(
-            'dayT_id',
-            'dayT_name',
-            'dayT_standard'
+            'spac_id',
+            'spac_name',
+            'spac_abr'
         );
         $statement= Connection::doConnection()->prepare($query);
         if(isset($data)){
@@ -32,13 +32,13 @@ class DayTimesModel{
                 if(!$result) continue;
                 switch($index){
                     case 0:
-                        $statement->bindParam(":dayT_id", $data["dayT_id"],PDO::PARAM_INT);
+                        $statement->bindParam(":spac_id", $data["spac_id"],PDO::PARAM_INT);
                         break;
                     case 1:
-                        $statement->bindParam(":dayT_name", $data["dayT_name"],PDO::PARAM_STR);
+                        $statement->bindParam(":spac_name", $data["spac_name"],PDO::PARAM_STR);
                         break;
                     case 1:
-                        $statement->bindParam(":dayT_standard", $data["dayT_standard"],PDO::PARAM_STR);
+                        $statement->bindParam(":spac_abr", $data["spac_standard"],PDO::PARAM_STR);
                         break;
                 }
             }

@@ -1,9 +1,9 @@
 <?php
-require_once 'model/dayTimesModel.php';
 require_once 'model/sceneModel.php';
 require_once 'model/projectModel.php';
 require_once 'controller/endpointController.php';
-require_once 'model/spacesModel.php';
+require_once 'model/dayTimeModel.php';
+require_once 'model/spaceModel.php';
 
 class SceneController extends EndpointController{
     function __construct($method, $complement=null, $data=null,$add=null){
@@ -31,10 +31,10 @@ class SceneController extends EndpointController{
                             $response = SceneModel::readProjectScenes($this->_complement);
                             break;
                         case 'daytimes':
-                            $response = DayTimesModel::readDayTimes($this->_complement);
+                            $response = DayTimeModel::readDayTimes($this->_complement);
                             break;
                         case 'spaces':
-                            $response = SpacesModel::readSpaces($this->_complement);
+                            $response = SpaceModel::readSpaces($this->_complement);
                             break;
                         default:
                             if(!is_numeric($this->_add))throw new Exception(104);
@@ -43,19 +43,18 @@ class SceneController extends EndpointController{
                     }
                     break;
                 case 'POST':
-                    $this->needNone();
+                    $this->needComplement();
                     $strictFields = array(
                         'scen_number',
                         'scen_duration',
                         'scen_place',
                         'dayT_id',
                         'spac_id',
-                        'scen_argument',
-                        'proj_id'
+                        'scen_argument'
                     );
                     $this->setStrict($strictFields);
                     $this->strictFields();
-                    $response = SceneModel::createScene($this->_data);
+                    $response = SceneModel::createScene($this->_complement,$this->_data);
                     break;
                 case 'PUT':
                     $this->needAdd();
