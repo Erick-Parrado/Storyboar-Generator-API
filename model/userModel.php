@@ -35,6 +35,7 @@ class UserModel extends TableModel{
     //POST
     static public function createUser($data){
         self::emailExist($data);
+        $data = self::generateSalting($data);
         $query = "INSERT INTO users(user_name, user_lastName, user_email, user_pass, user_phone, us_identifier, us_key) VALUES (:user_name,:user_lastName,:user_email,:user_pass,:user_phone,:us_identifier,:us_key)";
         return self::executeQuery($query,200,$data);
         return 209;
@@ -59,13 +60,6 @@ class UserModel extends TableModel{
         $query = 'DELETE FROM users WHERE user_id = :user_id';
         return self::executeQuery($query,203,$data);
         return 219;
-    }
-    
-    static public function deleteAllUsers(){
-        $query = 'DELETE FROM users';
-        $reset = 'ALTER TABLE users AUTO_INCREMENT = 1';
-        self::executeQuery($reset,211);
-        return self::executeQuery($query,210);
     }
 
     //Login
@@ -103,7 +97,6 @@ class UserModel extends TableModel{
         $model = new UserModel();
         parent::exist($data);
     }
-
     
     static private function generateSalting($data){
         $trimmed_data="";

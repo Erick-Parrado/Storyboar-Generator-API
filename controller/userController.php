@@ -10,7 +10,7 @@ class UserController extends EndpointController{
             'user_name',
             'user_lastName',            
             "user_email"=>"/^([a-zA-Z0-9_.]{8,})@([a-z]{5,})\.([a-z]{2,3})(\.[a-z]{2,3})?$/",
-            "user_pass"=>"/^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*[0-9]+)(?=.*[!@#$%^&*(){}\-\]\[\/]+)[a-zA-Z0-9!@#$%^&*(){}\-\]\[\/]{8,}$/",
+            "user_pass"=>"/^(?=.*[a-z]+)(?=.*[A-Z]+)(?=.*[0-9]+)(?=.*[!@#$%^&*(){}\-\]\[\/<>]+)[a-zA-Z0-9!@#$%^&*(){}\-\]\[\/<>]{8,}$/",
             "user_phone"=>"/^[0-9]{10}$/",
             'us_identifier',
             'us_key'
@@ -26,7 +26,7 @@ class UserController extends EndpointController{
                 $response = UserModel::readUser($this->_complement);
                 break;
             case 'POST':
-                $this->needComplement();
+                $this->needNone();
                 $strictFields = array(
                     'user_name','user_lastName'
                     ,'user_email','user_pass',
