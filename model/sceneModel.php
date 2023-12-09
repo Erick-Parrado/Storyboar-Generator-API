@@ -90,42 +90,19 @@ class SceneModel{
         if($data['scen_number']<=$scenCount){
             $query = 'SELECT scen_id,scen_number,proj_id FROM scenes WHERE scen_number>=:scen_number AND proj_id = :proj_id  ORDER BY scen_number ASC';
             //echo json_encode($data,JSON_UNESCAPED_SLASHES);
-            $changeScenes = self::executeQuery($query,1,$data)[1]->fetchAll(PDO::FETCH_ASSOC);
-            //echo json_encode($changeScenes,JSON_UNESCAPED_UNICODE);
-            foreach($changeScenes as $scene){
-                $scene['scen_number']++;
-                //echo json_encode($scene,JSON_UNESCAPED_SLASHES);
-                self::updateMethod($scene);
-            }
+            self::numberChalenger($query,$data,true);
         }
     }
-
     
     static public function updateNumberScene($data,$preScen_id){
         if($data['scen_number']<$preScen_id){//Movimiento de mayor a menor
             $query = 'SELECT scen_id,scen_number,proj_id FROM scenes WHERE (scen_number BETWEEN :scen_number AND '.($preScen_id-1).') AND proj_id=:proj_id ORDER BY scen_number ASC';
-            //echo $query;
-            //var_dump($data);
-            //echo json_encode($data,JSON_UNESCAPED_SLASHES);
-            $changeScenes = self::executeQuery($query,1,$data)[1]->fetchAll(PDO::FETCH_ASSOC);
-            //echo json_encode($changeScenes,JSON_UNESCAPED_UNICODE);
-            foreach($changeScenes as $scene){
-                $scene['scen_number']++;
-                //echo json_encode($scene,JSON_UNESCAPED_SLASHES);
-                self::updateMethod($scene);
-            }
+            self::numberChalenger($query,$data,true);
         }
         if($data['scen_number']>$preScen_id){//Movimiento de menor a mayor
             $query = 'SELECT scen_id,scen_number,proj_id FROM scenes WHERE (scen_number BETWEEN '.($preScen_id+1).' AND :scen_id) AND proj_id=:proj_id  ORDER BY scen_number ASC';
             //echo json_encode($data,JSON_UNESCAPED_SLASHES);
-            echo $query;
-            $changeScenes = self::executeQuery($query,1,$data)[1]->fetchAll(PDO::FETCH_ASSOC);
-            //echo json_encode($changeScenes,JSON_UNESCAPED_UNICODE);
-            foreach($changeScenes as $scene){
-                $scene['scen_number']--;
-                //echo json_encode($scene,JSON_UNESCAPED_SLASHES);
-                self::updateMethod($scene);
-            }
+            self::numberChalenger($query,$data,false);
         }
     }
 
@@ -135,12 +112,20 @@ class SceneModel{
         $query = 'SELECT scen_id,scen_number,proj_id FROM scenes WHERE scen_number>:scen_number AND proj_id = :proj_id  ORDER BY scen_number ASC';
         //echo json_encode($data,JSON_UNESCAPED_SLASHES);
         $changeScenes = self::executeQuery($query,1,$data)[1]->fetchAll(PDO::FETCH_ASSOC);
-        //echo json_encode($changeScenes,JSON_UNESCAPED_UNICODE);
-        foreach($changeScenes as $scene){
-            $scene['scen_number']--;
-            //echo json_encode($scene,JSON_UNESCAPED_SLASHES);
-            self::updateMethod($scene);
+        self::numberChalenger($query,$data,false);
     }
+
+    static public function numberChalenger($query,$data,$way){
+        $changeScenes = self::executeQuery($query,1,$data)[1]->fetchAll(PDO::FETCH_ASSOC);
+        foreach($changeScenes as $scene){
+            if($way){
+                $scene['scen_number']++;
+            }
+            else{
+                $scene['scen_number']--;
+            }
+            self::updateMethod($scene);
+        }
     }
 
     
