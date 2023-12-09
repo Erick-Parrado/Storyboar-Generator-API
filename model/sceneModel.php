@@ -11,14 +11,14 @@ class SceneModel{
         $data['scen_number'] = $scen_number;
         $data['proj_id'] = $proj_id;
         $data['scen_id']= self::exist($data);
-        $query = 'SELECT scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes WHERE scen_id =:scen_id';
+        $query = 'SELECT scen_id,scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes WHERE scen_id =:scen_id';
         return self::executeQuery($query,301,$data);
     }
     
     static public function readProjectScenes($proj_id = null){
         if($proj_id == null) throw new Exception(428);
         $data['proj_id'] = $proj_id;
-        $query = 'SELECT scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes WHERE proj_id =:proj_id ORDER BY scen_number ASC';
+        $query = 'SELECT scen_id,scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes WHERE proj_id =:proj_id ORDER BY scen_number ASC';
         return self::executeQuery($query,402,$data);
     }
 
@@ -40,10 +40,9 @@ class SceneModel{
     static public function updateScene($scen_number,$proj_id,$data){
         SpacesModel::exist($data);
         DayTimesModel::exist($data);
-        $existData['proj_id'] = $proj_id;
         $data['proj_id']=$proj_id;
-        $existData['scen_number'] = $scen_number;
-        $data['scen_id']= self::exist($existData);
+        $data['scen_number'] = $scen_number;
+        $data['scen_id']= self::exist($data);
         if($data['scen_id']==0) throw new Exception(419);
         if(array_key_exists('scen_number',$data)){
             if($scen_number != $data['scen_number']){
@@ -52,6 +51,17 @@ class SceneModel{
             }
         } 
         return self::updateMethod($data);
+    }
+
+    //DELETE
+    static public function deleteScene($scen_number,$proj_id){
+        $data['proj_id']=$proj_id;
+        $data['scen_number'] = $scen_number;
+        $data['scen_id']= self::exist($data);
+        if($data['scen_id']==0) throw new Exception(419);
+        self::deleteNumberScene($data);
+        $query = 'DELETE FROM scenes WHERE scen_id = :scen_id';
+        return self::executeQuery($query,404,$data);
     }
     
 
@@ -117,6 +127,20 @@ class SceneModel{
                 self::updateMethod($scene);
             }
         }
+    }
+
+    
+    static public function deleteNumberScene($data){
+        $scenCount = (self::readProjectScenes($data['proj_id'])[1]->rowCount());
+        $query = 'SELECT scen_id,scen_number,proj_id FROM scenes WHERE scen_number>:scen_number AND proj_id = :proj_id  ORDER BY scen_number ASC';
+        //echo json_encode($data,JSON_UNESCAPED_SLASHES);
+        $changeScenes = self::executeQuery($query,1,$data)[1]->fetchAll(PDO::FETCH_ASSOC);
+        //echo json_encode($changeScenes,JSON_UNESCAPED_UNICODE);
+        foreach($changeScenes as $scene){
+            $scene['scen_number']--;
+            //echo json_encode($scene,JSON_UNESCAPED_SLASHES);
+            self::updateMethod($scene);
+    }
     }
 
     

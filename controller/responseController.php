@@ -139,6 +139,9 @@ class ResponseController{
             case 403:
                 self::setInfo('Escena actualizada');
                 break;
+            case 404:
+                self::setInfo('Escena eliminada');
+                break;
             case 419:
                 self::setError('Escena no existe');
                 break;

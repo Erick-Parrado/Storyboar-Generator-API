@@ -63,8 +63,8 @@ class SceneController extends EndpointController{
                     $response = SceneModel::updateScene($this->_complement,$this->_add,$this->_data);
                     break;
                 case 'DELETE':
-                    break;
-                case 'PATCH':
+                    $this->needAdd();
+                    $response = SceneModel::deleteScene($this->_complement,$this->_add,$this->_data);
                     break;
                 default:
                     $response = 104;
