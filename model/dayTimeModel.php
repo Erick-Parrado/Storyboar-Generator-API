@@ -37,7 +37,7 @@ class DayTimeModel{
                     case 1:
                         $statement->bindParam(":dayT_name", $data["dayT_name"],PDO::PARAM_STR);
                         break;
-                    case 1:
+                    case 2:
                         $statement->bindParam(":dayT_standard", $data["dayT_standard"],PDO::PARAM_STR);
                         break;
                 }

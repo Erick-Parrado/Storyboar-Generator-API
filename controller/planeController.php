@@ -30,18 +30,17 @@ class PlaneController extends EndpointController{
             switch($this->_method){
                 case 'GET':
                     switch($this->_add){
-                        case 'scene':
-                            $this->needAdd();
-                            //$response = SceneModel::readProjectScenes($this->_complement);
-                            break;
                         case 'moves':
-                            //$response = DayTimeModel::readDayTimes($this->_complement);
+                            $this->needAdd();
+                            $response = MoveModel::readMoves($this->_complement);
                             break;
                         case 'framings':
-                            //$response = SpacesModel::readSpaces($this->_complement);
+                            $this->needAdd();
+                            $response = FramingModel::readFraming($this->_complement);
                             break;
                         case 'shots':
-                            //$response = SpacesModel::readSpaces($this->_complement);
+                            $this->needAdd();
+                            $response = ShotModel::readShots($this->_complement);
                             break;
                         default:
                             if($this->_more != null){
