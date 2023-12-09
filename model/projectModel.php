@@ -44,8 +44,8 @@ class ProjectModel extends TableModel{
     static public function updateProject($proj_id,$data){
         $data['proj_id'] = $proj_id;
         self::exist($data);
+        $data['proj_dateUpdate'] = self::makeUpdate();
         parent::updateMethod($data);
-        self::makeUpdate($proj_id);
         return 302;
     }
 

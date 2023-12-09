@@ -23,9 +23,11 @@ class ProjectController extends EndpointController{
             }
             switch($this->_method){
                 case 'GET':
+                    $this->optionalComplement();
                     $response = ProjectModel::readProject($this->_complement);
                     break;
                 case 'POST':
+                    $this->needNone();
                     $strictFields= array(
                         "proj_tittle",
                         "proj_producer",
@@ -36,22 +38,22 @@ class ProjectController extends EndpointController{
                     $response = ProjectModel::createProject($this->_data);
                     break;
                 case 'PUT':
+                    $this->needComplement();
                     $this->validateFields();
                     $response = ProjectModel::updateProject($this->_complement,$this->_data);
                     break;
                 case 'DELETE':
+                    $this->needComplement();
                     $response = ProjectModel::deleteProject($this->_complement);
                     break;
                 case 'PATCH':
+                    $this->needAdd();
                     if($this->_add=='PIN'){
                         $response = ProjectModel::generatePIN($this->_complement);
                     }
-                    else{
-                        $response = 104;
-                    }
                     break;
                 default:
-                    $response = 104;
+                    throw new Exception(104);
             }
             ResponseController::response($response);
         }catch(Exception $e){

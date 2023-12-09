@@ -4,6 +4,8 @@ require_once 'controller/responseController.php';
 require_once 'controller/routesController.php';
 require_once 'model/userModel.php';
 
+date_default_timezone_set('America/Bogota');
+
 header('Access-Control-Allow-Headers: Content-Type');
 header('Access-Control-Allow-Origin: *');
 header("Access-Control-Allow-Methods: GET, POST, PUT, DELETE");
