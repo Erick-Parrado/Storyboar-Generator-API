@@ -65,7 +65,7 @@ class SceneController extends EndpointController{
                 $response = SceneModel::deleteScene($this->_complement,$this->_add);
                 break;
             default:
-                $response = 104;
+            throw new Exception(104);
         }
         ResponseController::response($response);
     }

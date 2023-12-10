@@ -46,7 +46,7 @@ class UserController extends EndpointController{
                 $response = UserModel::deleteUser($this->_complement);
                 break;
             default:
-                $response = 104;
+                throw new Exception(104);
         }
         ResponseController::response($response);
     }

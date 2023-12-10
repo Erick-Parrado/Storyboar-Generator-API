@@ -63,7 +63,7 @@ class TeamController extends EndpointController{
                 $response = TeamModel::deleteMember($this->_data);
                 break;
             default:
-                $response = 104;
+                throw new Exception(104);
         }
         ResponseController::response($response);
     } 

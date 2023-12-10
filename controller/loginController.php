@@ -11,21 +11,18 @@ class loginController extends EndpointController{
     }
 
     public function index(){
-        try{
-            $response = 0;
-            switch($this->_method){
-                case 'POST':
-                    $this->strictFields();
-                    $response = UserModel::login($this->_data);
-                    break;
-                default:
-                    $response = 104;
-            }
-            ResponseController::response($response);
+        $response = 0;
+        $this->needNone();
+        switch($this->_method){
+            case 'POST':
+                $this->strictFields();
+                $response = UserModel::login($this->_data);
+                break;
+            default:
+                throw new Exception(104);
         }
-        catch(Exception $e){
-            ResponseController::response((int)$e->getMessage());
-        }
+        ResponseController::response($response);
+    
     }
 }
 ?>

@@ -181,6 +181,9 @@ class ResponseController{
             case 503:
                 self::setError('Plano actualizado');
                 break;
+            case 504:
+                self::setError('Plano eliminado');
+                break;
             case 519:
                 self::setError('Plano no existe');
                 break;
@@ -288,6 +291,18 @@ class ResponseController{
                 break;
             case 910:
                 self::setInfo('SQL Error',self::$_extra);
+                break;
+            case 1619:
+                self::setError('spac_id no es valido');
+                break;
+            case 1419:
+                self::setError('fram_id no es valido');
+                break;
+            case 1519:
+                self::setError('move_id no es valido');
+                break;
+            case 1619:
+                self::setError('shot_id no es valido');
                 break;
             default:
                 self::setError('Mensaje no identificado :v',self::$_extra);
