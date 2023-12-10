@@ -93,9 +93,9 @@ class UserModel extends TableModel{
         }
     }
 
-    static public function exist($data){
+    static public function exist($data,$way=false){
         new UserModel();
-        parent::exist($data);
+        parent::exist($data,$way);
     }
     
     static private function generateSalting($data){

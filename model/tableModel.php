@@ -25,10 +25,15 @@ class TableModel{
         return $data;
     }
     
-    static public function  exist($data){
+    static public function exist($data,$way=false){
         $query = "SELECT ".self::$_prefix."_id FROM ".self::$_table." WHERE ".self::$_prefix."_id =:".self::$_prefix."_id";
         $count = self::executeQuery($query,200,$data)[1]->rowCount();
-        if($count<=0)throw new Exception(self::$_baseCode+19);
+        if($way){
+            if($count>0) throw new Exception(self::$_baseCode+9);
+        }
+        else{
+            if($count<=0) throw new Exception(self::$_baseCode+19);
+        }
     }
 
     static protected function updateMethod($data){
@@ -53,6 +58,7 @@ class TableModel{
         $matcher = ($matcher == null)?self::$_matcher:$matcher;
         $statement= Connection::doConnection()->prepare($query);
         //echo json_encode(self::$_fields,JSON_UNESCAPED_UNICODE);
+        //echo json_encode($data,JSON_UNESCAPED_UNICODE);
         if(isset($data)){
             foreach(self::$_fields as $field){
                 $pattern = '/^.*:'.$field.'.*$/';
@@ -64,7 +70,7 @@ class TableModel{
 
         if(preg_match('/^SELECT.*$/',$query)){
             $error = $statement->execute() ? false : Connection::doConnection()->errorInfo();
-            if($error != false) return array(910,$error->getMessage());
+            if($error != false) throw new Exception($error->getMessage());//return array(910,$error->getMessage());
             if($fetch) return array($confirmCod,$statement->fetchAll());
             return array($confirmCod,$statement);
         }
@@ -72,7 +78,7 @@ class TableModel{
             $error = $statement->execute() ? false : Connection::doConnection()->errorInfo();
             $statement-> closeCursor();
             $statement = null;
-            if($error != false) return array(910,$error->getMessage());
+            if($error != false) throw new Exception($error->getMessage());//return array(910,$error->getMessage());
             else return $confirmCod;
         }
     }

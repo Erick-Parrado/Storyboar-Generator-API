@@ -245,7 +245,7 @@ class ResponseController{
             case 709://Ingreso 
                 self::setError('Ya se ha creado el acceso'); 
                 break;  
-            case 710://Ingreso 
+            case 719://Ingreso 
                 self::setError('El acceso no existe'); 
                 break;  
             case 720:
@@ -266,7 +266,7 @@ class ResponseController{
             case 751:
                 self::setResult(self::$_extra);
                 break;
-            case 759:
+            case 1119:
                 self::setError('Rol no existe');
                 break;
             case 299:

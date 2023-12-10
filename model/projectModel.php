@@ -15,7 +15,7 @@ class ProjectModel extends TableModel{
             'proj_pin'
         );
         
-        $model_baseCode = 200;
+        $model_baseCode = 300;
         $matcher = self::getMatcher();
         parent::__construct($table_name,$table_prefix,$table_fields,$matcher,$model_baseCode);
     }
@@ -57,9 +57,9 @@ class ProjectModel extends TableModel{
         return self::executeQuery($query,303,$data);
     }
     //Extras
-    static public function exist($data){
+    static public function exist($data,$way=false){
         new ProjectModel();
-        parent::exist($data);
+        parent::exist($data,$way);
     }
 
     static public function projectExist($data){
@@ -81,20 +81,13 @@ class ProjectModel extends TableModel{
         return ($count>0)?1:0;
     }
 
-    static public function projectByPIN($pin){
-        $data =[];
-        if(!is_array($pin)){
-            $data['proj_pin'] = $pin;
-        }
-        else{
-            $data = $pin;
-        }
+    static public function projectByPIN($data){
         if(self::pinExist($data)){
             $query = 'SELECT proj_id FROM projects WHERE proj_pin=:proj_pin';
-            $project = self::executeQuery($query,1,$data,true)[1][0]['proj_id'];
-            return $project;
+            $proj_id = self::executeQuery($query,1,$data,true)[1][0]['proj_id'];
+            return $proj_id;
         }
-        return false;
+        throw new Exception(319);
     }
 
     static public function generatePIN($proj_id = null){
