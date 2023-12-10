@@ -1,5 +1,21 @@
 <?php
-class DayTimeModel{
+require_once 'model/tableModel.php';
+
+class DayTimeModel extends TableModel{
+    public function __construct()
+    {
+        $table_name = 'day_times';
+        $table_prefix = 'dayT';
+        $table_fields = array(
+            'dayT_id',
+            'dayT_name',
+            'dayT_standard'
+        );
+        $model_baseCode = 1200;
+        $matcher = self::getMatcher();
+        parent::__construct($table_name,$table_prefix,$table_fields,$matcher,$model_baseCode);
+    }
+    
     static public function readDayTimes($dayT_id){
         $data= [];
         $query = 'SELECT * FROM day_times';
@@ -10,53 +26,32 @@ class DayTimeModel{
         return self::executeQuery($query,751,$data);
     }
 
-    static public function exist($data){
-        if(array_key_exists('dayT_id',$data)){
-            $query = "SELECT dayT_id FROM day_times WHERE dayT_id=:dayT_id";
-            $count = self::executeQuery($query,1,$data)[1]->rowCount();
-            if($count<=0) throw new Exception(426);
-        }
+    static public function exist($data,$way=false){
+        new DayTimeModel();
+        parent::exist($data,$way);
     }
 
-    static public function executeQuery($query,$confirmCod = 0,$data=null,$fetch=false){
-        $fields = array(
-            'dayT_id',
-            'dayT_name',
-            'dayT_standard'
-        );
-        $statement= Connection::doConnection()->prepare($query);
-        if(isset($data)){
-            foreach(array_keys($fields) as $index){
-                $pattern = '/^.*:'.$fields[$index].'.*$/';
-                $result = (preg_match($pattern,$query));
-                if(!$result) continue;
-                switch($index){
-                    case 0:
-                        $statement->bindParam(":dayT_id", $data["dayT_id"],PDO::PARAM_INT);
-                        break;
-                    case 1:
-                        $statement->bindParam(":dayT_name", $data["dayT_name"],PDO::PARAM_STR);
-                        break;
-                    case 2:
-                        $statement->bindParam(":dayT_standard", $data["dayT_standard"],PDO::PARAM_STR);
-                        break;
-                }
-            }
-        }
+    //Ejecutor de queries
+    static public function  executeQuery($query,$confirmCod = 0,$data=null,$fetch=false,$matcher=null){
+        new DayTimeModel();
+        return parent::executeQuery($query,$confirmCod,$data,$fetch);
+    }
 
-        if(preg_match('/^SELECT.*$/',$query)){
-            $error = $statement->execute() ? false : Connection::doConnection()->errorInfo();
-            if($error != false) return array(910,$error->getMessage());
-            if($fetch) return array($confirmCod,$statement->fetchAll());
-            return array($confirmCod,$statement);
-        }
-        else{
-            $error = $statement->execute() ? false : Connection::doConnection()->errorInfo();
-            $statement-> closeCursor();
-            $statement = null;
-            if($error != false) return array(910,$error->getMessage());
-            else return $confirmCod;
-        }
+    static private function getMatcher(){
+        return function($statement,$field,$data){
+            switch($field){
+                case "dayT_id":
+                    $statement->bindParam(":dayT_id", $data["dayT_id"],PDO::PARAM_INT);
+                    break;
+                case "dayT_name":
+                    $statement->bindParam(":dayT_name", $data["dayT_name"],PDO::PARAM_STR);
+                    break;
+                case "dayT_standard":
+                    $statement->bindParam(":dayT_standard", $data["dayT_standard"],PDO::PARAM_STR);
+                    break;
+            }
+            return $statement;
+        };
     }
 }
 ?>

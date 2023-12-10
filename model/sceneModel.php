@@ -3,8 +3,27 @@
 require_once 'model/projectModel.php';
 require_once 'model/spaceModel.php';
 require_once 'model/dayTimeModel.php';
+require_once 'model/tableModel.php';
 
-class SceneModel{
+class SceneModel extends TableModel{
+    public function __construct()
+    {
+        $table_name = 'scenes';
+        $table_prefix = 'scen';
+        $table_fields = array(
+            "scen_id",
+            "scen_number",
+            "scen_duration",
+            "scen_place",
+            "scen_argument",
+            "dayT_id",
+            "spac_id",
+            "proj_id"
+        );
+        $model_baseCode = 400;
+        $matcher = self::getMatcher();
+        parent::__construct($table_name,$table_prefix,$table_fields,$matcher,$model_baseCode);
+    }
 
     //GET
     static public function readScene($scen_number,$proj_id){
@@ -25,12 +44,13 @@ class SceneModel{
     //POST
     static public function createScene($proj_id,$data){
         $data['proj_id'] = $proj_id;
+        $data['scen_place'] = strtoupper($data['scen_place']);
         SpaceModel::exist($data);
         DayTimeModel::exist($data);
-        if(!self::validNumberScene($data)) return 421;
+        self::validNumberScene($data);
         self::newNumberScene($data); 
         //echo json_encode($data,JSON_UNESCAPED_UNICODE);
-        $query = 'INSERT INTO `scenes`(`scen_number`, `scen_duration`, `scen_place`, `dayT_id`, `spac_id`, `scen_argument`, `proj_id`) VALUES  (:scen_number,:scen_duration,:scen_place,:dayT_id,:spac_id,:scen_argument,:proj_id)';
+        $query = 'INSERT INTO scenes(scen_number, scen_duration, scen_place, dayT_id, spac_id, scen_argument,proj_id) VALUES  (:scen_number,:scen_duration,:scen_place,:dayT_id,:spac_id,:scen_argument,:proj_id)';
         return self::executeQuery($query,400,$data);
     }
 
@@ -39,24 +59,28 @@ class SceneModel{
         SpaceModel::exist($data);
         DayTimeModel::exist($data);
         $data['proj_id']=$proj_id;
-        $data['scen_number'] = $scen_number;
-        $data['scen_id']= self::exist($data);
-        if($data['scen_id']==0) throw new Exception(419);
+        $posScen_number = $data['scen_number'];
+        $data['scen_number']= $scen_number;
+        $data= self::exist($data);
+        self::exist($data);
         if(array_key_exists('scen_number',$data)){
-            if($scen_number != $data['scen_number']){
-                if(!self::validNumberScene($data)) throw new Exception(421);
+            if($scen_number != $posScen_number){
+                $data['scen_number']= $posScen_number;
+                self::validNumberScene($data);
                 self::updateNumberScene($data,$scen_number);
             }
         } 
-        return self::updateMethod($data);
+        self::updateMethod($data);
+        return 403;
     }
 
     //DELETE
     static public function deleteScene($scen_number,$proj_id){
         $data['proj_id']=$proj_id;
         $data['scen_number'] = $scen_number;
-        $data['scen_id']= self::exist($data);
-        if($data['scen_id']==0) throw new Exception(419);
+        $data = self::exist($data);
+        //self::exist($data);
+        
         self::deleteNumberScene($data);
         $query = 'DELETE FROM scenes WHERE scen_id = :scen_id';
         return self::executeQuery($query,404,$data);
@@ -64,19 +88,19 @@ class SceneModel{
     
 
     //Extras
-    static public function exist($data){
+    static public function exist($data,$way=false){
         //echo json_encode($data,JSON_UNESCAPED_SLASHES);
-        $query = '';
         if(array_key_exists('scen_id',$data)){
-            $query = "SELECT scen_id FROM scenes WHERE scen_id = :scen_id";
+            new SceneModel();
+            parent::exist($data,$way);
         }
         else{
             $query = "SELECT scen_id FROM scenes WHERE proj_id=:proj_id AND scen_number = :scen_number";
+            $statement = self::executeQuery($query,1,$data,true);
+            $data['scen_id'] = (isset($statement[1][0]['scen_id']))?$statement[1][0]['scen_id']:0;
+            if($data['scen_id']==0)throw new Exception(419);
+            return $data;
         }
-        $scen_id = self::executeQuery($query,1,$data,true);
-        $scen_id = (isset($scen_id[1][0]['scen_id']))?$scen_id[1][0]['scen_id']:0;
-        if($scen_id==0)throw new Exception(419);
-        return $scen_id;
     }
 
     static public function getProjectId($data){
@@ -88,11 +112,12 @@ class SceneModel{
 
     static private function validNumberScene($data){
         $scenCount = (self::readProjectScenes($data['proj_id'])[1]->rowCount());
-        return ($data['scen_number']<=$scenCount+1 && $data['scen_number']>0)?1:0;
+        if($data['scen_number']>$scenCount+1 || $data['scen_number']<0) throw new Exception(421);
     }
 
     static public function newNumberScene($data){
         $scenCount = (self::readProjectScenes($data['proj_id'])[1]->rowCount());
+        //echo json_encode($data,JSON_UNESCAPED_UNICODE);
         if($data['scen_number']<=$scenCount){
             $query = 'SELECT scen_id,scen_number,proj_id FROM scenes WHERE scen_number>=:scen_number AND proj_id = :proj_id  ORDER BY scen_number ASC';
             //echo json_encode($data,JSON_UNESCAPED_SLASHES);
@@ -106,8 +131,8 @@ class SceneModel{
             self::numberChalenger($query,$data,true);
         }
         if($data['scen_number']>$preScen_id){//Movimiento de menor a mayor
-            $query = 'SELECT scen_id,scen_number,proj_id FROM scenes WHERE (scen_number BETWEEN '.($preScen_id+1).' AND :scen_id) AND proj_id=:proj_id  ORDER BY scen_number ASC';
-            //echo json_encode($data,JSON_UNESCAPED_SLASHES);
+            $query = 'SELECT scen_id,scen_number,proj_id FROM scenes WHERE (scen_number BETWEEN '.($preScen_id+1).' AND :scen_number) AND proj_id=:proj_id  ORDER BY scen_number ASC';
+
             self::numberChalenger($query,$data,false);
         }
     }
@@ -121,6 +146,7 @@ class SceneModel{
 
     static public function numberChalenger($query,$data,$way){
         $changeScenes = self::executeQuery($query,1,$data)[1]->fetchAll(PDO::FETCH_ASSOC);
+        //echo json_encode($changeScenes,JSON_UNESCAPED_SLASHES);
         foreach($changeScenes as $scene){
             if($way){
                 $scene['scen_number']++;
@@ -131,94 +157,54 @@ class SceneModel{
             self::updateMethod($scene);
         }
     }
-
     
-    static private function updateMethod($data) {
+    static protected function updateMethod($data) {
         if(!array_key_exists('scen_id',$data)){
             $data['scen_id'] = self::exist($data);
         }
-        if($data['scen_id']!=0){
-            ProjectModel::makeUpdate($data['proj_id']);
-            $query = "UPDATE scenes SET ";
-            $dataAO = new ArrayObject($data);
-            $iter = $dataAO->getIterator();
-            while($iter->valid()){
-                if(is_numeric($iter->key())){ 
-                    $iter->next();
-                    continue;
-                }
-                $query .= $iter->key()."=:".$iter->key();
-                $iter->next();
-                if($iter->valid()){
-                    $query .= ",";
-                }
-                else{
-                    $query .= " WHERE scen_id =:scen_id";
-                }
-            }
-            return self::executeQuery($query,403,$data);
-        }
-        return 419;
+        self::exist($data);
+        //echo json_encode($data,JSON_UNESCAPED_SLASHES);
+        ProjectModel::makeUpdate($data['proj_id']);
+        new SceneModel();
+        parent::updateMethod($data);
+    }
+    
+    //Ejecutor de queries
+    static public function  executeQuery($query,$confirmCod = 0,$data=null,$fetch=false,$matcher=null){
+        new SceneModel();
+        return parent::executeQuery($query,$confirmCod,$data,$fetch);
     }
 
-    static public function  executeQuery($query,$confirmCod = 0,$data=null,$fetch=false){
-        $fields = array(
-            "scen_id",
-            "scen_number",
-            "scen_duration",
-            "scen_place",
-            "scen_argument",
-            "dayT_id",
-            "spac_id",
-            "proj_id");
-        $statement= Connection::doConnection()->prepare($query);
-        if(isset($data)){
-            foreach(array_keys($fields) as $index){
-                $pattern = '/^.*:'.$fields[$index].'.*$/';
-                $result = (preg_match($pattern,$query));
-                if(!$result) continue;
-                switch($index){
-                    case 0:
-                        $statement->bindParam(":scen_id", $data["scen_id"],PDO::PARAM_INT);
-                        break;
-                    case 1:
-                        $statement->bindParam(":scen_number", $data["scen_number"],PDO::PARAM_INT);
-                        break;
-                    case 2:
-                        $statement->bindParam(":scen_duration", $data["scen_duration"],PDO::PARAM_INT);
-                        break;
-                    case 3:
-                        $statement->bindParam(":scen_place", $data["scen_place"],PDO::PARAM_STR);
-                        break;
-                    case 4:
-                        $statement->bindParam(":scen_argument", $data["scen_argument"],PDO::PARAM_STR);
-                        break;
-                    case 5:
-                        $statement->bindParam(":dayT_id", $data["dayT_id"],PDO::PARAM_INT);
-                        break;
-                    case 6:
-                        $statement->bindParam(":spac_id", $data["spac_id"],PDO::PARAM_INT);
-                        break;
-                    case 7:
-                        $statement->bindParam(":proj_id", $data["proj_id"],PDO::PARAM_INT);
-                        break;
-                }
+    static private function getMatcher(){
+        return function($statement,$field,$data){
+            switch($field){
+                case "scen_id":
+                    $statement->bindParam(":scen_id", $data["scen_id"],PDO::PARAM_INT);
+                    break;
+                case "scen_number":
+                    $statement->bindParam(":scen_number", $data["scen_number"],PDO::PARAM_INT);
+                    break;
+                case "scen_duration":
+                    $statement->bindParam(":scen_duration", $data["scen_duration"],PDO::PARAM_INT);
+                    break;
+                case "scen_place":
+                    $statement->bindParam(":scen_place", $data["scen_place"],PDO::PARAM_STR);
+                    break;
+                case "scen_argument":
+                    $statement->bindParam(":scen_argument", $data["scen_argument"],PDO::PARAM_STR);
+                    break;
+                case "dayT_id":
+                    $statement->bindParam(":dayT_id", $data["dayT_id"],PDO::PARAM_INT);
+                    break;
+                case "spac_id":
+                    $statement->bindParam(":spac_id", $data["spac_id"],PDO::PARAM_INT);
+                    break;
+                case "proj_id":
+                    $statement->bindParam(":proj_id", $data["proj_id"],PDO::PARAM_INT);
+                    break;
             }
-        }
-
-        if(preg_match('/^SELECT.*$/',$query)){
-            $error = $statement->execute() ? false : Connection::doConnection()->errorInfo();
-            if($error != false) return array(910,$error->getMessage());
-            if($fetch) return array($confirmCod,$statement->fetchAll());
-            return array($confirmCod,$statement);
-        }
-        else{
-            $error = $statement->execute() ? false : Connection::doConnection()->errorInfo();
-            $statement-> closeCursor();
-            $statement = null;
-            if($error != false) return array(910,$error->getMessage());
-            else return $confirmCod;
-        }
+            return $statement;
+        };
     }
 }
 ?>

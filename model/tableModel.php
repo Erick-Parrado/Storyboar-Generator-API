@@ -26,18 +26,23 @@ class TableModel{
     }
     
     static public function exist($data,$way=false){
+        if(!array_key_exists(self::$_prefix."_id",$data)) {
+            return;
+        }
         $query = "SELECT ".self::$_prefix."_id FROM ".self::$_table." WHERE ".self::$_prefix."_id =:".self::$_prefix."_id";
         $count = self::executeQuery($query,200,$data)[1]->rowCount();
-        if($way){
+        if($way){//Valida que ya existe
             if($count>0) throw new Exception(self::$_baseCode+9);
         }
-        else{
+        else{//Valida que no existe
             if($count<=0) throw new Exception(self::$_baseCode+19);
         }
     }
 
     static protected function updateMethod($data){
-        self::cleanData($data);
+        //if(isset($data['scen_id'])) echo json_encode(self::$_fields,JSON_UNESCAPED_UNICODE);
+        $data = self::cleanData($data);
+        //if(isset($data['scen_id'])) echo json_encode($data,JSON_UNESCAPED_UNICODE);
         $query = "UPDATE ".self::$_table." SET ";
         $dataAO = new ArrayObject($data);
         $iter = $dataAO->getIterator();

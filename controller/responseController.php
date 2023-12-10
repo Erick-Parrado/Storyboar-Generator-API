@@ -151,10 +151,10 @@ class ResponseController{
             case 421:
                 self::setError('scen_number no es valido');
                 break;
-            case 425:
+            case 1319:
                 self::setError('spac_id no es valido');
                 break;
-            case 426:
+            case 1219:
                 self::setError('dayT_id no es valido');
                 break;
             case 428:
@@ -168,8 +168,7 @@ class ResponseController{
                         'scen_place',
                         'dayT_id',
                         'spac_id',
-                        'scen_argument',
-                        'proj_id'
+                        'scen_argument'
                 ));
                 break;
             case 500:
