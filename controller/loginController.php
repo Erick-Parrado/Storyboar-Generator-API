@@ -12,9 +12,14 @@ class loginController extends EndpointController{
 
     public function index(){
         $response = 0;
-        $this->needNone();
         switch($this->_method){
             case 'POST':
+                $strictFields= array(
+                    "user_email",
+                    "user_pass"
+                );
+                $this->needNone();
+                $this->setStrict($strictFields);
                 $this->strictFields();
                 $response = UserModel::login($this->_data);
                 break;

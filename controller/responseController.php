@@ -210,7 +210,7 @@ class ResponseController{
                 break;
             case 600:
                 self::setInfo('Inicio de sesion','OK');
-                self::$_response['credentials'] = self::$_extra;
+                self::$_response['credentials'][0] = self::$_extra;
                 break;
             case 604:
                 self::setError('ERROR EN CREDENCIALES');
@@ -235,7 +235,6 @@ class ResponseController{
                 break; 
             case 701://Get Users in Teams
             case 702:
-                self::setResult(self::$_extra);
                 self::setResult(self::$_extra);
                 break;
             case 703://Put Team in Teams
