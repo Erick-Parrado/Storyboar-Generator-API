@@ -210,16 +210,20 @@ class ResponseController{
                 break;
             case 600:
                 self::setInfo('Inicio de sesion','OK');
-                self::$_response['credentials'][0] = self::$_extra;
+
+                self::$_response['credentials'] = self::$_extra;
+                // self::$_response['message']="OK";
                 break;
             case 604:
                 self::setError('ERROR EN CREDENCIALES');
-                self::$_response['credentials'] = null;
+                self::$_response['credentials'] = [];
                 self::$_response['header'] = "HTTP/1.1 400 FAIL";
                 break;
             case 621:
+                self::setError('Correo no valido');
+                break;
             case 622:
-                self::codeChange(604);
+                self::setError('Contraseña no valida');
                 break;
             case 620:
                 self::setError('Campos no reconocidos para el inicio de sesion');
@@ -304,7 +308,7 @@ class ResponseController{
                 self::setError('shot_id no es valido');
                 break;
             default:
-                self::setError('Mensaje no identificado :v',self::$_extra);
+                //self::setError('Mensaje no identificado :v',self::$_extra);
         }
         echo json_encode(self::$_response,JSON_UNESCAPED_UNICODE);
     }
