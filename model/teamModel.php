@@ -35,9 +35,9 @@ class TeamModel extends TableModel{
     }
 
     //POST
-    static public function accessProject($data){
+    static public function accessProject($data,$role_id = 3){
         $data['proj_id'] = ProjectModel::projectByPIN($data);
-        $data['role_id'] = 3;
+        $data['role_id'] = $role_id;
         UserModel::exist($data);
         $data['team_id'] = $data['proj_id'].''.$data['user_id'];
         self::accessMade($data,true);

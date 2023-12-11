@@ -1,5 +1,6 @@
 <?php
 require_once 'model/tableModel.php';
+require_once 'model/teamModel.php';
 
 class ProjectModel extends TableModel{
     public function __construct()
@@ -21,12 +22,15 @@ class ProjectModel extends TableModel{
     }
 
     //POST
-    static public function createProject($data){
+    static public function createProject($data,$user_id){
         self::projectExist($data);
         $data['proj_pin'] = self::generatePIN();
         $data['proj_dateUpdate'] = self::makeUpdate();
         $query = 'INSERT INTO projects(proj_tittle,proj_producer,proj_description,proj_pin,proj_dateUpdate) VALUES (:proj_tittle,:proj_producer,:proj_description,:proj_pin,:proj_dateUpdate)';
-        return self::executeQuery($query,300,$data);
+        $response = self::executeQuery($query,300,$data);
+        $data['user_id'] = $user_id;
+        TeamModel::accessProject($data,1);
+        return $response;
     }
     
     //GET

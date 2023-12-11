@@ -27,7 +27,7 @@ class ProjectController extends EndpointController{
                     $response = ProjectModel::readProject($this->_complement);
                     break;
                 case 'POST':
-                    $this->needNone();
+                    $this->needComplement();
                     $strictFields= array(
                         "proj_tittle",
                         "proj_producer",
@@ -35,7 +35,7 @@ class ProjectController extends EndpointController{
                     );
                     $this->setStrict($strictFields);
                     $this->strictFields();
-                    $response = ProjectModel::createProject($this->_data);
+                    $response = ProjectModel::createProject($this->_data,$this->_complement);
                     break;
                 case 'PUT':
                     $this->needComplement();

@@ -38,24 +38,26 @@ switch ($count){
 function enterRoutes($endPoint){
     try{
         if($endPoint != 'login'){
-            if(isset($_SERVER['PHP_AUTH_USER']) && ($_SERVER['PHP_AUTH_PW'])){
-                $ok=false;
-                $data['us_identifier'] = $_SERVER['PHP_AUTH_USER'];
-                $data['us_key'] = $_SERVER['PHP_AUTH_PW'];
-                $ok = UserModel::validateAuth($data);
-                if($ok){
+            // if(isset($_SERVER['PHP_AUTH_USER']) && ($_SERVER['PHP_AUTH_PW'])){
+            //     $ok=false;
+            //     $data['us_identifier'] = $_SERVER['PHP_AUTH_USER'];
+            //     $data['us_key'] = $_SERVER['PHP_AUTH_PW'];
+            //     $ok = UserModel::validateAuth($data);
+            //     if($ok){
+            //         $routes = new RoutesController();
+            //         $routes -> index();
+            //     }
+            //     else{
+            //         throw new Exception(115);
+            //         return;
+            //     }
+            // }
+            // else{
+            //     throw new Exception(114);
+            //     return;
+            // }
                     $routes = new RoutesController();
                     $routes -> index();
-                }
-                else{
-                    throw new Exception(115);
-                    return;
-                }
-            }
-            else{
-                throw new Exception(114);
-                return;
-            }
         }
         else{
             $routes = new RoutesController();
