@@ -13,6 +13,7 @@ class ProjectModel extends TableModel{
             'proj_producer',
             'proj_description',
             'proj_dateUpdate',
+            'proj_image',
             'proj_pin'
         );
         
@@ -26,7 +27,7 @@ class ProjectModel extends TableModel{
         self::projectExist($data);
         $data['proj_pin'] = self::generatePIN();
         $data['proj_dateUpdate'] = self::makeUpdate();
-        $query = 'INSERT INTO projects(proj_tittle,proj_producer,proj_description,proj_pin,proj_dateUpdate) VALUES (:proj_tittle,:proj_producer,:proj_description,:proj_pin,:proj_dateUpdate)';
+        $query = 'INSERT INTO projects(proj_tittle,proj_producer,proj_description,proj_pin,proj_dateUpdate,proj_image) VALUES (:proj_tittle,:proj_producer,:proj_description,:proj_pin,:proj_dateUpdate,:proj_image)';
         $response = self::executeQuery($query,300,$data);
         $data['user_id'] = $user_id;
         TeamModel::accessProject($data,1);
@@ -36,7 +37,7 @@ class ProjectModel extends TableModel{
     //GET
     static public function readProject($proj_id=null){
         $data = [];
-        $query = 'SELECT proj_id,proj_tittle,proj_producer,proj_description,proj_dateUpdate FROM projects';
+        $query = 'SELECT proj_id,proj_tittle,proj_producer,proj_description,proj_dateUpdate,proj_image FROM projects';
         if($proj_id > 0 && $proj_id != null){
             $data['proj_id'] = $proj_id;
             $query .= ' WHERE proj_id =:proj_id';
@@ -138,6 +139,9 @@ class ProjectModel extends TableModel{
                     break;
                 case "proj_dateUpdate":
                     $statement->bindParam(":proj_dateUpdate", $data["proj_dateUpdate"],PDO::PARAM_STR);
+                    break;
+                case "proj_image":
+                    $statement->bindParam(":proj_image", $data["proj_image"],PDO::PARAM_STR);
                     break;
                 case "proj_pin":
                     $statement->bindParam(":proj_pin", $data["proj_pin"],PDO::PARAM_STR);

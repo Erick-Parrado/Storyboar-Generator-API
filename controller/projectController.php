@@ -9,6 +9,7 @@ class ProjectController extends EndpointController{
             "proj_tittle",
             "proj_producer",
             "proj_description",
+            "proj_image",
             "proj_dateUpdate",
             "proj_pin"
         );
