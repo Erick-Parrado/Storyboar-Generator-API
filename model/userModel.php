@@ -10,7 +10,6 @@ class UserModel extends TableModel{
         $table_fields = array(
             'user_id',
             'user_name',
-            'user_lastName',
             'user_email',
             'user_pass',
             'user_phone',
@@ -26,7 +25,7 @@ class UserModel extends TableModel{
     //GET
     static public function readUser($user_id=0){
         $data = [];
-        $query = 'SELECT user_id,user_name,user_lastName,user_email,user_pass,user_phone FROM users';
+        $query = 'SELECT user_id,user_name,user_email,user_pass,user_phone FROM users';
         if($user_id > 0 && $user_id != null){
             $data['user_id'] = $user_id;
             $query .= ' WHERE user_id =:user_id';
@@ -37,7 +36,7 @@ class UserModel extends TableModel{
     static public function createUser($data){
         self::emailExist($data);
         $data = self::generateSalting($data);
-        $query = "INSERT INTO users(user_name, user_lastName, user_email, user_pass, user_phone, us_identifier, us_key) VALUES (:user_name,:user_lastName,:user_email,:user_pass,:user_phone,:us_identifier,:us_key)";
+        $query = "INSERT INTO users(user_name, user_email, user_pass, user_phone, us_identifier, us_key) VALUES (:user_name,:user_email,:user_pass,:user_phone,:us_identifier,:us_key)";
         return self::executeQuery($query,200,$data);
     }
 
@@ -128,9 +127,6 @@ class UserModel extends TableModel{
                     break;
                 case "user_name":
                     $statement->bindParam(":user_name", $data["user_name"],PDO::PARAM_STR);
-                    break;
-                case "user_lastName":
-                    $statement->bindParam(":user_lastName", $data["user_lastName"],PDO::PARAM_STR);
                     break;
                 case "user_email":
                     $statement->bindParam(":user_email", $data["user_email"],PDO::PARAM_STR);
