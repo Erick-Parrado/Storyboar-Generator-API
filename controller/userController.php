@@ -8,7 +8,7 @@ class UserController extends EndpointController{
         $fields = array(
             'user_id',
             'user_name',       
-            "user_email"=>"/^([a-zA-Z0-9_.]{8,})@([a-z]{5,})\.([a-z]{2,3})(\.[a-z]{2,3})?$/",
+            "user_email"=>"/^([a-zA-Z0-9!\"#$%&'()*,_.\-\/]{3,})@([a-z]{5,})\.([a-z]{2,3})(\.[a-z]{2,3})?$/",
             "user_pass",
             "user_phone"=>"/^[0-9]{10}$/",
             'us_identifier',

@@ -52,7 +52,7 @@ class ResponseController{
                 self::setInfo('Usuario eliminado');
                 break;
             case 209:
-                self::setInfo('Usuario ya existe');
+                self::setError('Usuario ya existe');
                 break;
             case 210://Delete All Users
                 self::setInfo('Base de datos reiniciada');

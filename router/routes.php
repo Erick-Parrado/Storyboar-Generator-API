@@ -50,7 +50,7 @@ if ($routesArray[3] == ''){
             $petition = new LoginController($method,$complement,$_POST);
             break;
         default:
-            ResponseController::response(104);
+            throw new Exception(104);
             return;
     }
     $petition->index();

@@ -34,7 +34,7 @@ class UserModel extends TableModel{
     }
     //POST
     static public function createUser($data){
-        self::emailExist($data);
+        self::emailExist($data,true);
         $data = self::generateSalting($data);
         $query = "INSERT INTO users(user_name, user_email, user_pass, user_phone, us_identifier, us_key) VALUES (:user_name,:user_email,:user_pass,:user_phone,:us_identifier,:us_key)";
         return self::executeQuery($query,200,$data);
@@ -44,12 +44,11 @@ class UserModel extends TableModel{
     static public function updateUser($id,$data){
         $data['user_id']=$id;
         self::exist($data);
-        self::emailExist($data);
+        self::emailExist($data,true);
         $data = self::generateSalting($data);
         new UserModel();
         parent::updateMethod($data);
         return 202;
-        throw new Exception(219);
     }
 
     //DELETE
@@ -58,16 +57,15 @@ class UserModel extends TableModel{
         self::exist($data);
         $query = 'DELETE FROM users WHERE user_id = :user_id';
         return self::executeQuery($query,203,$data);
-        return 219;
     }
 
     //Login
-    static public function login($dataIn){
-        self::emailExist($dataIn);
+    static public function login($data){
+        self::emailExist($data,false);
         $query = 'SELECT user_id,us_identifier,us_key FROM users WHERE user_email=:user_email AND user_pass=:user_pass';
-        $count = self::executeQuery($query,1,$dataIn)[1]->rowCount();
+        $count = self::executeQuery($query,1,$data)[1]->rowCount();
         if($count>0){
-            $response = self::executeQuery($query,600,$dataIn,true);
+            $response = self::executeQuery($query,600,$data,true);
             //var_dump($response);
             return $response;
         }
@@ -82,11 +80,16 @@ class UserModel extends TableModel{
     }
 
     //Extras
-    static private function emailExist($data){
+    static private function emailExist($data,$way = false){
         if(array_key_exists('user_email',$data)){
             $query = "SELECT user_email FROM users WHERE user_email=:user_email";
             $count = self::executeQuery($query,200,$data)[1]->rowCount();
-            if($count<0) throw new Exception(209);
+            if($way){//Valida que ya existe
+                if($count>0) throw new Exception(self::$_baseCode+9);
+            }
+            else{//Valida que no existe
+                if($count<=0) throw new Exception(self::$_baseCode+19);
+            }
         }
     }
 

@@ -99,7 +99,6 @@ class EndpointController{
                     throw new Exception($this->_codBase+29);
                 }
             }
-            
             $iter->next();
         }
     }
