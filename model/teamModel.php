@@ -23,14 +23,14 @@ class TeamModel extends TableModel{
     static public function readUsers($proj_id){
         $data['proj_id'] = $proj_id;
         ProjectModel::exist($data);
-        $query = 'SELECT team_id,proj_id,users.user_id,users.user_name,users.user_email,users.user_phone FROM team_members INNER JOIN users ON team_members.user_id = users.user_id WHERE team_members.proj_id = :proj_id';
+        $query = 'SELECT TM.user_id,users.user_name,users.user_email,users.user_phone FROM team_members AS TM INNER JOIN users ON TM.user_id = users.user_id WHERE TM.proj_id = :proj_id';
         return self::executeQuery($query,701,$data);
     }
     
     static public function readProjects($user_id){
         $data['user_id'] = $user_id;
         UserModel::exist($data);
-        $query = 'SELECT team_id,team_members.proj_id,proj_tittle,proj_producer,proj_description FROM team_members INNER JOIN projects ON team_members.proj_id = projects.proj_id WHERE team_members.user_id=:user_id';
+        $query = 'SELECT TM.proj_id,proj_tittle,proj_producer,proj_description,proj_image FROM team_members AS TM INNER JOIN projects ON TM.proj_id = projects.proj_id WHERE TM.user_id=:user_id';
         return self::executeQuery($query,702,$data);
     }
 

@@ -65,7 +65,6 @@ GET:
 -/API/planes/*move_id*/moves
 -/API/planes/*fram_id*/framings
 -/API/planes/*shot_id*/shots
--/API/planes/*scen_number*/*proj_id* : obtiene lista de los planos de una escena
 -/API/planes/*plan_number*/*scen_number*/*proj_id* : obtiene un plano de una escena
 
 POST:

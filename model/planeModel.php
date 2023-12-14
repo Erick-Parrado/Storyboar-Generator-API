@@ -35,7 +35,7 @@ class PlaneModel extends TableModel{
         $data['scen_number'] = $scen_number;
         $data['proj_id'] = $proj_id;
         $data = SceneModel::exist($data);
-        $query = 'SELECT * FROM planes ';
+        $query = 'SELECT P.plan_id,P.plan_duration,P.plan_description,P.plan_image,F.fram_name,F.fram_abr,S.shot_name,M.move_name FROM planes AS P INNER JOIN framings AS F ON F.fram_id = P.fram_id INNER JOIN shots AS S ON S.shot_id = P.shot_id INNER JOIN moves AS M ON M.move_id = P.move_id';
         if($plan_number > 0 && $plan_number != null){
             $data = self::exist($data);
             $query .= ' WHERE plan_id =:plan_id';

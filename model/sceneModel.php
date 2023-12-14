@@ -29,7 +29,7 @@ class SceneModel extends TableModel{
     static public function readScene($scen_number,$proj_id){
         $data['scen_number'] = $scen_number;
         $data['proj_id'] = $proj_id;
-        $query = 'SELECT scen_id,scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes';
+        $query = 'SELECT scen_id,scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes AS SC INNER JOIN day_times AS D ON D.dayT_id = SC.dayT_id INNER JOIN spaces AS SP ON SP.spac_id = SC.spac_id';
         if($scen_number > 0 && $scen_number != null){
             $data = self::exist($data);
             $query .= ' WHERE scen_id =:scen_id';

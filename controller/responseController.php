@@ -330,7 +330,7 @@ class ResponseController{
     static private function setResult($statement){
         self::$_response['info']['status']=self::$_cod;
         self::$_response['info']['count']=$statement->rowCount();
-        self::$_response['response']=$statement->fetchAll();
+        self::$_response['result']=$statement->fetchAll();
 
     }
 
