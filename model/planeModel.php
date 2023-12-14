@@ -103,7 +103,7 @@ class PlaneModel extends TableModel{
     static public function exist($data,$way=false){
         //echo json_encode($data,JSON_UNESCAPED_SLASHES);
         new PlaneModel();
-        parent::exist($data);
+        parent::exist($data,$way);
         if(!array_key_exists('scen_id',$data)){
             $data= SceneModel::exist($data);
         }

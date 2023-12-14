@@ -92,6 +92,7 @@ class SceneModel extends TableModel{
         $query = "SELECT scen_id FROM scenes WHERE proj_id=:proj_id AND scen_number = :scen_number";
         $statement = self::executeQuery($query,1,$data,true);
         $data['scen_id'] = (isset($statement[1][0]['scen_id']))?$statement[1][0]['scen_id']:0;
+        //echo json_encode($data,JSON_UNESCAPED_SLASHES);
         if($data['scen_id']==0)throw new Exception(419);
         return $data;
     }
@@ -161,9 +162,9 @@ class SceneModel extends TableModel{
     
     static protected function updateMethod($data) {
         if(!array_key_exists('scen_id',$data)){
+            //echo ':v';
             $data['scen_id'] = self::exist($data);
         }
-        self::exist($data);
         //echo json_encode($data,JSON_UNESCAPED_SLASHES);
         ProjectModel::makeUpdate($data['proj_id']);
         new SceneModel();
