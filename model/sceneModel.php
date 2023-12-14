@@ -29,16 +29,13 @@ class SceneModel extends TableModel{
     static public function readScene($scen_number,$proj_id){
         $data['scen_number'] = $scen_number;
         $data['proj_id'] = $proj_id;
-        $data = self::exist($data);
-        $query = 'SELECT scen_id,scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes WHERE scen_id =:scen_id';
+        $query = 'SELECT scen_id,scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes';
+        if($scen_number > 0 && $scen_number != null){
+            $data = self::exist($data);
+            $query .= ' WHERE scen_id =:scen_id';
+        }
+        $query .= " ORDER BY scen_number ASC";
         return self::executeQuery($query,301,$data);
-    }
-    
-    static public function readProjectScenes($proj_id = null){
-        if($proj_id == null) throw new Exception(428);
-        $data['proj_id'] = $proj_id;
-        $query = 'SELECT scen_id,scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes WHERE proj_id =:proj_id ORDER BY scen_number ASC';
-        return self::executeQuery($query,402,$data);
     }
 
     //POST
@@ -90,17 +87,13 @@ class SceneModel extends TableModel{
     //Extras
     static public function exist($data,$way=false){
         //echo json_encode($data,JSON_UNESCAPED_SLASHES);
-        if(array_key_exists('scen_id',$data)){
-            new SceneModel();
-            parent::exist($data,$way);
-        }
-        else{
-            $query = "SELECT scen_id FROM scenes WHERE proj_id=:proj_id AND scen_number = :scen_number";
-            $statement = self::executeQuery($query,1,$data,true);
-            $data['scen_id'] = (isset($statement[1][0]['scen_id']))?$statement[1][0]['scen_id']:0;
-            if($data['scen_id']==0)throw new Exception(419);
-            return $data;
-        }
+        new SceneModel();
+        parent::exist($data,$way);
+        $query = "SELECT scen_id FROM scenes WHERE proj_id=:proj_id AND scen_number = :scen_number";
+        $statement = self::executeQuery($query,1,$data,true);
+        $data['scen_id'] = (isset($statement[1][0]['scen_id']))?$statement[1][0]['scen_id']:0;
+        if($data['scen_id']==0)throw new Exception(419);
+        return $data;
     }
 
     static public function getProjectId($data){
@@ -110,13 +103,21 @@ class SceneModel extends TableModel{
         return ($proj_id>0)?$proj_id:0;
     }
 
+    
+    static private function scenesCount($proj_id = null){
+        if($proj_id == null) throw new Exception(428);
+        $data['proj_id'] = $proj_id;
+        $query = 'SELECT scen_id,scen_number,scen_duration,scen_place,dayT_id,spac_id,scen_argument,proj_id FROM scenes WHERE proj_id =:proj_id ORDER BY scen_number ASC';
+        return self::executeQuery($query,402,$data)[1]->rowCount();
+    }
+    
     static private function validNumberScene($data){
-        $scenCount = (self::readProjectScenes($data['proj_id'])[1]->rowCount());
+        $scenCount = (self::scenesCount($data['proj_id']));
         if($data['scen_number']>$scenCount+1 || $data['scen_number']<0) throw new Exception(421);
     }
 
     static public function newNumberScene($data){
-        $scenCount = (self::readProjectScenes($data['proj_id'])[1]->rowCount());
+        $scenCount = (self::scenesCount($data['proj_id']));
         //echo json_encode($data,JSON_UNESCAPED_UNICODE);
         if($data['scen_number']<=$scenCount){
             $query = 'SELECT scen_id,scen_number,proj_id FROM scenes WHERE scen_number>=:scen_number AND proj_id = :proj_id  ORDER BY scen_number ASC';

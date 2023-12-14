@@ -26,9 +26,6 @@ class SceneController extends EndpointController{
             case 'GET':
                 $this->needAdd();
                 switch($this->_add){
-                    case 'project':
-                        $response = SceneModel::readProjectScenes($this->_complement);
-                        break;
                     case 'daytimes':
                         $response = DayTimeModel::readDayTimes($this->_complement);
                         break;

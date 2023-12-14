@@ -29,22 +29,21 @@ class PlaneModel extends TableModel{
 
     //GET
     static public function readPlane($plan_number,$scen_number,$proj_id){
+        if($proj_id == null) throw new Exception(428);
+        if($scen_number == null) throw new Exception(528);
         $data['plan_number'] = $plan_number;
         $data['scen_number'] = $scen_number;
         $data['proj_id'] = $proj_id;
-        $data= self::exist($data);
-        $query = 'SELECT * FROM planes WHERE plan_id =:plan_id';
-        return self::executeQuery($query,501,$data);
-    }
-    
-    static public function readScenePlanes($scen_number = null,$proj_id = null){
-        if($proj_id == null) throw new Exception(428);
-        if($scen_number == null) throw new Exception(528);
-        $data['proj_id'] = $proj_id;
-        $data['scen_number'] = $scen_number;
         $data = SceneModel::exist($data);
-        $query = 'SELECT * FROM planes WHERE scen_id =:scen_id ORDER BY plan_number ASC';
-        return self::executeQuery($query,502,$data);
+        $query = 'SELECT * FROM planes ';
+        if($plan_number > 0 && $plan_number != null){
+            $data = self::exist($data);
+            $query .= ' WHERE plan_id =:plan_id';
+        }
+        $query .= ' ORDER BY plan_number ASC';
+        //echo $query;
+        
+        return self::executeQuery($query,501,$data);
     }
 
     //POST
@@ -103,25 +102,20 @@ class PlaneModel extends TableModel{
     //Extras
     static public function exist($data,$way=false){
         //echo json_encode($data,JSON_UNESCAPED_SLASHES);
-        $query = '';
+        new PlaneModel();
+        parent::exist($data);
         if(!array_key_exists('scen_id',$data)){
             $data= SceneModel::exist($data);
         }
-        if(array_key_exists('plan_id',$data)){
-            new PlaneModel();
-            parent::exist($data);
-        }
-        else{
-            $query = "SELECT plan_id FROM planes WHERE plan_number=:plan_number AND scen_id = :scen_id";
-        }
+        $query = "SELECT plan_id FROM planes WHERE plan_number=:plan_number AND scen_id = :scen_id";
         $statement = self::executeQuery($query,1,$data,true);
-        //var_dump($statement);
         $data['plan_id'] = (isset($statement[1][0]['plan_id']))?$statement[1][0]['plan_id']:0;
+        if($data['plan_id']==0)throw new Exception(519);
         return $data;
     }
 
     static private function validNumberPlane($data){
-        $planeCount = (self::readScenePlanes($data['scen_number'],$data['proj_id'])[1]->rowCount());
+        $planeCount = (self::readPlane(0,$data['scen_number'],$data['proj_id'])[1]->rowCount());
         if($data['plan_number']>$planeCount+1 || $data['plan_number']==0)throw new Exception(521);
     }
 

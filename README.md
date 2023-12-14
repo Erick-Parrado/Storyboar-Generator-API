@@ -47,7 +47,6 @@ DELETE:
 
 --------------------scenes-----------------
 GET:
--/API/scenes/*proj_id*/project : obtiene las escenas de un proyecto
 -/API/scenes/*dayT_id*/daytimes : obtiene lista de tiempos
 -/API/scenes/*spac_id*/spaces : obtiene listado de espacios
 -/API/scenes/*scen_number*/*proj_id* : obtiene única escena

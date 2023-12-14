@@ -238,10 +238,10 @@ class ResponseController{
                 self::setInfo('Se ingreso exitosamente'); 
                 break; 
             case 701://Get Users in Teams
-            case 702:
+            case 702://Get Projects
                 self::setResult(self::$_extra);
                 break;
-            case 703://Put Team in Teams
+            case 703://Put Team
                 self::setInfo('Se actualizo rol');
                 break;
             case 704://Delete User from Team

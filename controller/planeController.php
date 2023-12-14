@@ -42,14 +42,8 @@ class PlaneController extends EndpointController{
                         $response = ShotModel::readShots($this->_complement);
                         break;
                     default:
-                        if($this->_more != null){
-                            $this->needMore();
-                            $response = PlaneModel::readPlane($this->_complement,$this->_add,$this->_more);
-                        }
-                        else{
-                            $this->needAdd();
-                            $response = PlaneModel::readScenePlanes($this->_complement,$this->_add);
-                        }
+                        $this->needMore();
+                        $response = PlaneModel::readPlane($this->_complement,$this->_add,$this->_more);
                         break;
                 }
                 break;
